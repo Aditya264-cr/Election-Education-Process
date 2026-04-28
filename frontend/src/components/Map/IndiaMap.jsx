@@ -112,12 +112,23 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
-// Fly to location subcomponent
+// Cinematic immersive zoom: zooms out first, then smooth fly-in to constituency
 function FlyToLocation({ position }) {
   const map = useMap();
   useEffect(() => {
     if (position) {
-      map.flyTo(position, 10, { duration: 1.5 });
+      const currentZoom = map.getZoom();
+      // Phase 1: Quick zoom out for dramatic effect
+      if (currentZoom > 7) {
+        map.flyTo(map.getCenter(), 6, { duration: 0.8 });
+        // Phase 2: Cinematic fly to target
+        setTimeout(() => {
+          map.flyTo(position, 12, { duration: 2.5, easeLinearity: 0.15 });
+        }, 900);
+      } else {
+        // Already zoomed out — direct cinematic fly
+        map.flyTo(position, 12, { duration: 2.5, easeLinearity: 0.15 });
+      }
     }
   }, [position, map]);
   return null;

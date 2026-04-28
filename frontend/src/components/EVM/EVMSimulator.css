@@ -29,8 +29,8 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 36px;
-  height: 36px;
+  width: var(--touch-min);
+  height: var(--touch-min);
   border-radius: 50%;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.08);
@@ -40,7 +40,6 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
-  transition: all 0.2s;
 }
 
 .evm-close-btn:hover {
@@ -129,9 +128,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid transparent;
-  transition: all 0.2s;
-  animation: fadeInUp 0.4s ease forwards;
-  opacity: 0;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .evm-candidate-row:hover:not(.disabled) {
@@ -192,19 +189,20 @@
   color: var(--text-primary);
 }
 
-/* Blue Button */
+/* Blue Button — 3D Tactile */
 .evm-blue-btn {
-  width: 44px;
-  height: 28px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #3B82F6, #1D4ED8);
+  width: var(--touch-min);
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%);
   border: 2px solid #60A5FA;
+  border-bottom: 3px solid #1E40AF;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s;
-  box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .evm-blue-btn:hover:not(:disabled) {
