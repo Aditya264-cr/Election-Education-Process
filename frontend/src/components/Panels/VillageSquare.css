@@ -1,0 +1,345 @@
+/* ── Village Square — Community Q&A ── */
+
+.vs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+}
+
+.vs-container {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vs-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-muted);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.vs-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text-primary);
+}
+
+/* Header */
+.vs-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vs-header-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.vs-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--saffron), #fff, var(--green-india));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2px;
+}
+
+.vs-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Neighbor's Guarantee */
+.vs-guarantee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(46,204,113,0.06);
+  border: 1px solid rgba(46,204,113,0.15);
+  border-radius: var(--radius-md);
+}
+
+.vs-guarantee-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.vs-guarantee-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.vs-guarantee-text strong {
+  color: #2ECC71;
+}
+
+/* Ask Section */
+.vs-ask-section {
+  padding-bottom: 4px;
+}
+
+.vs-ask-input-wrap {
+  display: flex;
+  gap: 8px;
+}
+
+.vs-ask-input {
+  flex: 1;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.vs-ask-input::placeholder {
+  color: var(--text-muted);
+}
+
+.vs-ask-input:focus {
+  border-color: var(--saffron);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 3px rgba(255,153,51,0.1);
+}
+
+.vs-ask-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
+  color: white;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(255,153,51,0.3);
+}
+
+.vs-ask-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,153,51,0.4);
+}
+
+.vs-ask-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Q&A List */
+.vs-qa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vs-qa-card {
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease forwards;
+  opacity: 0;
+  transition: border-color 0.2s;
+}
+
+.vs-qa-card:hover {
+  border-color: rgba(255,255,255,0.12);
+}
+
+.vs-qa-card.expanded {
+  border-color: rgba(255,153,51,0.2);
+  background: rgba(255,255,255,0.05);
+}
+
+.vs-qa-card.user-generated {
+  border-color: rgba(155,89,182,0.2);
+}
+
+.vs-qa-card.user-generated.expanded {
+  border-color: rgba(155,89,182,0.3);
+}
+
+/* Question Row */
+.vs-qa-question {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.vs-qa-question:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.vs-qa-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.vs-qa-q-text {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.vs-qa-arrow {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.vs-qa-arrow.open {
+  transform: rotate(90deg);
+  color: var(--saffron);
+}
+
+/* Answer Section */
+.vs-qa-answer {
+  padding: 0 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vs-qa-neighbor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-qa-neighbor-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--green-india));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.vs-qa-neighbor-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--saffron);
+}
+
+.vs-qa-a-text {
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  padding-left: 40px;
+}
+
+/* ECI Source */
+.vs-qa-source {
+  margin-left: 40px;
+  padding: 10px 14px;
+  background: rgba(46,204,113,0.05);
+  border: 1px solid rgba(46,204,113,0.12);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vs-qa-source-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #2ECC71;
+}
+
+.vs-qa-source-check {
+  font-size: 0.7rem;
+}
+
+.vs-qa-source-link {
+  font-size: 0.78rem;
+  color: #60A5FA;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+  word-break: break-word;
+}
+
+.vs-qa-source-link:hover {
+  color: #93C5FD;
+  text-decoration: underline;
+}
+
+/* Footer */
+.vs-footer {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.vs-footer-text {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.5;
+}
+
+.vs-footer-text strong {
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .vs-container {
+    padding: 20px 16px;
+  }
+  .vs-qa-a-text,
+  .vs-qa-source {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .vs-ask-input-wrap {
+    flex-direction: column;
+  }
+}

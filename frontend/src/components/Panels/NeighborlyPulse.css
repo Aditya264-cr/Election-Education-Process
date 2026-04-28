@@ -1,0 +1,351 @@
+/* ── Neighborly Pulse — Misinformation Firewall ── */
+
+.pulse-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Green — All Clear */
+.pulse-footer.pulse-green {
+  background: rgba(10, 14, 39, 0.92);
+  border-top: 2px solid rgba(46, 204, 113, 0.3);
+  backdrop-filter: blur(12px);
+}
+
+.pulse-footer.pulse-green .pulse-footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  justify-content: center;
+}
+
+.pulse-status-text {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Status dot */
+.pulse-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pulse-status-dot.green {
+  background: #2ECC71;
+  box-shadow: 0 0 8px rgba(46,204,113,0.5);
+  animation: pulse-dot 2s ease infinite;
+}
+
+.pulse-status-dot.yellow {
+  background: #F1C40F;
+  box-shadow: 0 0 12px rgba(241,196,15,0.6);
+  animation: pulse-dot-yellow 1s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+@keyframes pulse-dot-yellow {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px rgba(241,196,15,0.6); }
+  50% { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 20px rgba(241,196,15,0.8); }
+}
+
+/* Yellow — Alert Mode */
+.pulse-footer.pulse-yellow {
+  background: rgba(30, 25, 10, 0.97);
+  border-top: 3px solid #F1C40F;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 -4px 32px rgba(241,196,15,0.15);
+}
+
+.pulse-footer.pulse-yellow .pulse-footer-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+/* Alert Content */
+.pulse-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pulse-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pulse-alert-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  animation: pulse-shake 0.5s ease;
+}
+
+@keyframes pulse-shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.pulse-alert-text {
+  font-size: 0.8rem;
+  color: #FDE68A;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.pulse-alert-text strong {
+  color: #FBBF24;
+  font-weight: 700;
+}
+
+.pulse-expand-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(241,196,15,0.1);
+  border: 1px solid rgba(241,196,15,0.2);
+  color: #F1C40F;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.pulse-expand-btn:hover {
+  background: rgba(241,196,15,0.2);
+}
+
+/* ── Expanded Detail ── */
+.pulse-detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(241,196,15,0.1);
+}
+
+.pulse-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pulse-section-label {
+  margin-bottom: 6px;
+}
+
+.pulse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.pulse-badge.myth {
+  background: rgba(231,76,60,0.15);
+  color: #E74C3C;
+  border: 1px solid rgba(231,76,60,0.2);
+}
+
+.pulse-badge.fact {
+  background: rgba(46,204,113,0.15);
+  color: #2ECC71;
+  border: 1px solid rgba(46,204,113,0.2);
+}
+
+.pulse-myth-text {
+  font-size: 0.85rem;
+  color: #FECACA;
+  font-style: italic;
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: rgba(231,76,60,0.06);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid rgba(231,76,60,0.3);
+}
+
+.pulse-fact-text {
+  font-size: 0.85rem;
+  color: #D1FAE5;
+  line-height: 1.6;
+  padding: 10px 14px;
+  background: rgba(46,204,113,0.06);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid rgba(46,204,113,0.3);
+}
+
+/* ── Storyteller — Gentle Persuasion ── */
+.pulse-badge.storyteller {
+  background: rgba(255,153,51,0.15);
+  color: var(--saffron);
+  border: 1px solid rgba(255,153,51,0.2);
+}
+
+.pulse-storyteller-bubble {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: rgba(255,153,51,0.04);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,153,51,0.12);
+  border-left: 3px solid rgba(255,153,51,0.3);
+}
+
+.pulse-storyteller-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--green-india));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(255,153,51,0.25);
+}
+
+.pulse-storyteller-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pulse-storyteller-text {
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: #FDEBD0;
+  font-style: italic;
+}
+
+.pulse-storyteller-closing {
+  font-size: 0.78rem;
+  color: var(--saffron);
+  font-weight: 600;
+  margin-top: 8px;
+  font-style: normal;
+}
+
+/* PDF download link */
+.pulse-source-pdf {
+  font-size: 0.72rem;
+  color: #93C5FD;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 4px;
+  display: inline-block;
+  transition: color 0.2s;
+}
+
+.pulse-source-pdf:hover {
+  color: #BFDBFE;
+  text-decoration: underline;
+}
+
+/* Source */
+.pulse-source-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.pulse-source-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.pulse-source-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pulse-source-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.pulse-source-link {
+  font-size: 0.8rem;
+  color: #60A5FA;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.pulse-source-link:hover {
+  color: #93C5FD;
+  text-decoration: underline;
+}
+
+/* Actions */
+.pulse-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pulse-dismiss-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #2ECC71, #27AE60);
+  color: white;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+}
+
+.pulse-dismiss-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46,204,113,0.4);
+}
+
+.pulse-dismiss-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .pulse-footer.pulse-yellow .pulse-footer-inner {
+    padding: 10px 12px;
+  }
+  
+  .pulse-alert-text {
+    font-size: 0.72rem;
+  }
+
+  .pulse-myth-text,
+  .pulse-fact-text {
+    font-size: 0.78rem;
+  }
+}

@@ -1,0 +1,237 @@
+/* ── App Layout ── */
+.app-layout {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Header ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: rgba(10, 14, 39, 0.88) !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 1000;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  animation: float 4s ease infinite;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--saffron), #fff, var(--green-india));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Nav */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s var(--ease-smooth);
+  white-space: nowrap;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+}
+
+.nav-btn.active {
+  background: rgba(255,153,51,0.1);
+  color: var(--saffron);
+  border: 1px solid rgba(255,153,51,0.15);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.nav-label {
+  line-height: 1;
+}
+
+/* Right section */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Map Area ── */
+.app-map-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Loading ── */
+.map-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 32px;
+  background: rgba(10,14,39,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.map-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--saffron);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Timeline Drawer ── */
+.timeline-drawer {
+  position: absolute;
+  bottom: 24px;
+  left: 20px;
+  right: 20px;
+  z-index: 1050;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.timeline-dismiss {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.timeline-dismiss:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text-primary);
+}
+
+/* ── Disclaimer ── */
+.app-disclaimer {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.2);
+  z-index: 500;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 6px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    padding-top: 6px;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .logo-subtitle {
+    display: none;
+  }
+
+  .timeline-drawer {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+}

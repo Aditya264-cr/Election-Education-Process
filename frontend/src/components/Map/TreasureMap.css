@@ -1,0 +1,174 @@
+/* ── Treasure Hunt Map — Kids Polling Booth Finder ── */
+
+/* Treasure Chest Marker */
+.treasure-marker-wrapper {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.treasure-chest-icon {
+  font-size: 36px;
+  line-height: 1;
+  text-align: center;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
+  animation: treasure-bounce 2s ease infinite;
+  z-index: 2;
+  position: relative;
+}
+
+.treasure-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.4), transparent 70%);
+  animation: treasure-glow-pulse 2s ease infinite;
+  z-index: 1;
+}
+
+@keyframes treasure-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes treasure-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Treasure Popup */
+.treasure-popup {
+  text-align: center;
+  padding: 4px;
+  min-width: 200px;
+  font-family: var(--font-heading), 'Outfit', sans-serif;
+}
+
+.treasure-popup-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 6px;
+}
+
+.treasure-popup-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.treasure-popup-text {
+  font-size: 0.82rem;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+}
+
+.treasure-popup-text strong {
+  color: #1a1a1a;
+}
+
+.treasure-popup-mission {
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #FFF3CD, #FFEEBA);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #856404;
+  border: 1px solid #FFE082;
+  margin-bottom: 6px;
+}
+
+.treasure-popup-distance {
+  font-size: 0.72rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ── Treasure Hunt Banner ── */
+.treasure-hunt-banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(26, 10, 46, 0.92) !important;
+  border-color: rgba(255,215,0,0.3) !important;
+  max-width: 500px;
+  width: auto;
+}
+
+.treasure-banner-icon {
+  font-size: 1.8rem;
+  animation: float 3s ease infinite;
+  flex-shrink: 0;
+}
+
+.treasure-banner-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.treasure-banner-title {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FFD700, #FF69B4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.treasure-banner-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.treasure-banner-nearest {
+  padding: 4px 12px;
+  background: rgba(255,215,0,0.1);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  color: #FFD700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.treasure-banner-nearest strong {
+  font-weight: 700;
+}
+
+/* Override leaflet popup for treasure */
+.treasure-marker + .leaflet-popup .leaflet-popup-content-wrapper {
+  background: white !important;
+  color: #1a1a1a !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+  border: 2px solid #FFD700 !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .treasure-hunt-banner {
+    padding: 8px 14px;
+    gap: 8px;
+    max-width: 90vw;
+    flex-wrap: wrap;
+  }
+
+  .treasure-banner-icon {
+    font-size: 1.4rem;
+  }
+
+  .treasure-banner-title {
+    font-size: 0.78rem;
+  }
+}

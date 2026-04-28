@@ -1,0 +1,72 @@
+{
+  "description": "Misinformation firewall — common rumors and ECI-verified facts",
+  "lastUpdated": "2026-04-28",
+  "rumors": [
+    {
+      "id": "evm_hacked",
+      "keywords": ["EVM hacked", "EVM hack", "voting machine hacked", "machine tampered"],
+      "severity": "high",
+      "myth": "EVMs can be hacked remotely via WiFi or Bluetooth",
+      "fact": "EVMs are completely air-gapped stand-alone machines. They have NO WiFi, Bluetooth, or internet connectivity. Remote hacking is physically impossible.",
+      "source": "Election Commission of India — Official EVM FAQ",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "🛡️",
+      "shortAlert": "EVM hacking"
+    },
+    {
+      "id": "polling_cancelled",
+      "keywords": ["polling cancelled", "voting cancelled", "election cancelled", "booth closed"],
+      "severity": "high",
+      "myth": "Polling has been cancelled in your area",
+      "fact": "The Election Commission announces all polling changes officially through eci.gov.in and authorized media. Always verify with your District Election Officer before believing forwarded messages.",
+      "source": "ECI Official Communication Guidelines",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "📢",
+      "shortAlert": "polling cancellation"
+    },
+    {
+      "id": "ink_washing",
+      "keywords": ["ink washing", "ink comes off", "remove ink", "wash ink", "voter ink fake"],
+      "severity": "medium",
+      "myth": "The indelible ink can be washed off, allowing double voting",
+      "fact": "Electoral ink contains silver nitrate and is manufactured by Mysore Paints & Varnish Ltd under strict quality control. It penetrates the nail bed and stays visible for 4-6 weeks. Double-voting is also prevented by electronic checks.",
+      "source": "Mysore Paints & Varnish Ltd / ECI",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "✋",
+      "shortAlert": "voter ink"
+    },
+    {
+      "id": "evm_preloaded",
+      "keywords": ["pre-loaded votes", "preloaded", "EVM already has votes", "machine rigged"],
+      "severity": "high",
+      "myth": "EVMs come pre-loaded with votes for a specific party",
+      "fact": "Before every election, a mandatory mock poll of 1,000+ votes is conducted in front of all party agents. The machine is cleared and sealed only after agents verify zero starting count.",
+      "source": "ECI Mock Poll Protocol",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "🔍",
+      "shortAlert": "pre-loaded EVMs"
+    },
+    {
+      "id": "evm_swap",
+      "keywords": ["EVM swap", "machine replaced", "strong room", "machines switched"],
+      "severity": "high",
+      "myth": "EVMs are secretly swapped before counting day",
+      "fact": "After polling, EVMs are sealed with unique serial numbers and stored in strong rooms under 24/7 CCTV and armed guard. Political party agents can observe and camp outside. Any seal tampering is immediately detectable.",
+      "source": "ECI Strong Room Protocol",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "🏛️",
+      "shortAlert": "EVM swapping"
+    },
+    {
+      "id": "no_paper_trail",
+      "keywords": ["no paper trail", "no proof", "VVPAT fake", "no receipt"],
+      "severity": "medium",
+      "myth": "There is no paper trail for EVM votes",
+      "fact": "Every EVM is paired with a VVPAT (Voter Verifiable Paper Audit Trail) machine that prints a paper slip for each vote, visible for 7 seconds. VVPAT slips of 5 randomly selected booths per constituency are mandatorily cross-verified with EVM counts.",
+      "source": "Supreme Court of India — VVPAT Order 2019",
+      "sourceUrl": "https://eci.gov.in",
+      "icon": "🧾",
+      "shortAlert": "paper trail"
+    }
+  ]
+}

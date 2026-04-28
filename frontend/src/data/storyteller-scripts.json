@@ -1,0 +1,183 @@
+{
+  "description": "Gentle Persuasion Scripts — Storyteller Agent library for neighborly fact-checking",
+  "version": "1.0.0",
+  "lastUpdated": "2026-04-28",
+  "scripts": [
+    {
+      "id": "evm_bluetooth",
+      "rumorId": "evm_hacked",
+      "trigger": ["bluetooth", "wifi", "hacked", "internet", "connected"],
+      "en": {
+        "script": "You know, I was worried about that too! But I found out these machines aren't connected to the internet or Bluetooth at all. They are like a calculator, not a phone. It's pretty clever how they kept them isolated!",
+        "tone": "warm_curious",
+        "closingLine": "Want to see how the EVM actually works? Try our simulator!"
+      },
+      "hi": {
+        "script": "अरे, मुझे भी यही चिंता थी! लेकिन पता चला कि इन मशीनों में न इंटरनेट है, न ब्लूटूथ, न वाईफाई — कुछ भी नहीं। ये एक कैलकुलेटर की तरह हैं, फ़ोन की तरह नहीं। बहुत समझदारी से बनाया है!",
+        "tone": "warm_curious",
+        "closingLine": "EVM कैसे काम करती है, खुद देखना चाहोगे? सिम्युलेटर ट्राई करो!"
+      },
+      "mr": {
+        "script": "अरे, मलाही तेच वाटलं होतं! पण कळलं की या मशीन्सना इंटरनेट, ब्लूटूथ किंवा वायफाय काहीच नाही. त्या कॅल्क्युलेटर सारख्या आहेत, फोन सारख्या नाही. किती हुशारीने बनवलं आहे!",
+        "tone": "warm_curious",
+        "closingLine": "EVM कसं काम करतं बघायचं का? सिम्युलेटर वापरा!"
+      },
+      "ta": {
+        "script": "ஆமா, எனக்கும் அதே கவலை இருந்தது! ஆனா தெரிஞ்சுகிட்டேன், இந்த மெஷின்ல இன்டர்நெட்டோ, ப்ளூடூத்தோ, வைஃபையோ எதுவுமே கிடையாது. இது கால்குலேட்டர் மாதிரி, போன் மாதிரி இல்லை. ரொம்ப புத்திசாலித்தனமா பண்ணிருக்காங்க!",
+        "tone": "warm_curious",
+        "closingLine": "EVM எப்படி வேலை செய்றது பாக்கணுமா? சிம்யுலேட்டர் ட்ரை பண்ணுங்க!"
+      },
+      "bn": {
+        "script": "আরে, আমারও তো একই চিন্তা ছিল! কিন্তু জানলাম যে এই মেশিনগুলোতে ইন্টারনেট নেই, ব্লুটুথ নেই, ওয়াইফাই নেই — কিছুই নেই। এটা ক্যালকুলেটরের মতো, ফোনের মতো নয়। কত বুদ্ধি করে বানিয়েছে!",
+        "tone": "warm_curious",
+        "closingLine": "EVM কীভাবে কাজ করে দেখবেন? সিমুলেটর ট্রাই করুন!"
+      },
+      "sourceRef": "https://eci.gov.in/evm/",
+      "sourcePdf": "https://eci.gov.in/files/file/14036-evm-vvpat-awareness/"
+    },
+    {
+      "id": "ink_washing",
+      "rumorId": "ink_washing",
+      "trigger": ["ink", "washing", "comes off", "remove", "scrub"],
+      "en": {
+        "script": "Haha, I tried scrubbing it once just to see! That purple ink is actually silver nitrate—it reacts with your skin. It's our 'badge of honor' that stays for weeks.",
+        "tone": "friendly_humorous",
+        "closingLine": "No way to vote twice — that ink is basically a tiny chemistry lab on your finger!"
+      },
+      "hi": {
+        "script": "हाहा, मैंने भी एक बार रगड़कर देखा था! वो बैंगनी स्याही असल में सिल्वर नाइट्रेट है — ये त्वचा के साथ रिएक्ट करती है। ये हमारा 'सम्मान का बैज' है जो हफ़्तों रहता है।",
+        "tone": "friendly_humorous",
+        "closingLine": "दो बार वोट करने का कोई चांस नहीं — ये स्याही आपकी उंगली पर छोटी केमिस्ट्री लैब है!"
+      },
+      "mr": {
+        "script": "हाहा, मीही एकदा घासून बघितलं होतं! ती जांभळी शाई खरं तर सिल्व्हर नायट्रेट आहे — ती त्वचेशी रिअॅक्ट होते. तो आपला 'सन्मानाचा बिल्ला' आहे जो आठवडे टिकतो.",
+        "tone": "friendly_humorous",
+        "closingLine": "दोनदा मतदान करणं शक्यच नाही — ती शाई तुमच्या बोटावर छोटी केमिस्ट्री लॅब आहे!"
+      },
+      "ta": {
+        "script": "ஹஹா, நானும் ஒரு தடவை தேய்ச்சு பாத்தேன்! அந்த ஊதா மை உண்மையிலேயே சில்வர் நைட்ரேட் — அது தோலோட ரியாக்ட் ஆகும். இது நம்ம 'கௌரவ பேட்ஜ்', வாரக்கணக்கில் இருக்கும்.",
+        "tone": "friendly_humorous",
+        "closingLine": "ரெண்டு தடவை ஓட்டு போட முடியாது — அந்த மை உங்க விரல்ல ஒரு சின்ன கெமிஸ்ட்ரி லேப்!"
+      },
+      "bn": {
+        "script": "হাহা, আমিও একবার ঘষে দেখেছিলাম! ওই বেগুনি কালি আসলে সিলভার নাইট্রেট — এটা ত্বকের সাথে রিঅ্যাক্ট করে। এটা আমাদের 'সম্মানের ব্যাজ' যা সপ্তাহ ধরে থাকে।",
+        "tone": "friendly_humorous",
+        "closingLine": "দুবার ভোট দেওয়ার কোনো উপায় নেই — ওই কালি আপনার আঙুলে এক ছোট কেমিস্ট্রি ল্যাব!"
+      },
+      "sourceRef": "https://eci.gov.in/voter-ink/",
+      "sourcePdf": "https://eci.gov.in/files/file/14037-indelible-ink-awareness/"
+    },
+    {
+      "id": "evm_preloaded",
+      "rumorId": "evm_preloaded",
+      "trigger": ["preloaded", "pre-loaded", "rigged", "already votes"],
+      "en": {
+        "script": "I get why you might think that, but here's the cool part — before every single election, a 'mock poll' of at least 1,000 votes is done right in front of all the party agents. They literally watch the machine start at zero. It's like a group science experiment!",
+        "tone": "reassuring_interested",
+        "closingLine": "Anyone from any party can watch the whole thing. That's transparency at its best."
+      },
+      "hi": {
+        "script": "मैं समझता हूँ आपको ऐसा क्यों लगता है, लेकिन एक कूल बात है — हर चुनाव से पहले, सभी पार्टी एजेंटों के सामने कम से कम 1,000 वोटों का 'मॉक पोल' होता है। वो सब अपनी आँखों से देखते हैं कि मशीन जीरो से शुरू होती है। ये एक ग्रुप साइंस एक्सपेरिमेंट जैसा है!",
+        "tone": "reassuring_interested",
+        "closingLine": "किसी भी पार्टी का कोई भी व्यक्ति पूरी प्रक्रिया देख सकता है। यही असली पारदर्शिता है।"
+      },
+      "mr": {
+        "script": "मला समजतं तुम्हाला असं का वाटतं, पण एक भारी गोष्ट आहे — प्रत्येक निवडणुकीपूर्वी, सर्व पक्षांच्या एजंटसमोर किमान 1,000 मतांचं 'मॉक पोल' होतं. ते सगळे बघतात की मशीन शून्यापासून सुरू होते. हे ग्रुप सायन्स एक्सपेरिमेंट सारखं आहे!",
+        "tone": "reassuring_interested",
+        "closingLine": "कोणत्याही पक्षाचा कोणीही संपूर्ण प्रक्रिया बघू शकतो. हीच खरी पारदर्शकता."
+      },
+      "ta": {
+        "script": "நீங்க ஏன் அப்படி நினைக்கிறீங்கன்னு புரியுது, ஆனா ஒரு கூல் விஷயம் — ஒவ்வொரு தேர்தலுக்கு முன்னாடியும், எல்லா கட்சி ஏஜெண்ட்ஸ் முன்னாடி குறைஞ்சது 1,000 ஓட்டுகள் 'மாக் போல்' நடக்கும். மெஷின் ஜீரோவிலிருந்து தொடங்குறதை அவங்களே பாப்பாங்க. இது ஒரு குரூப் சயின்ஸ் எக்ஸ்பெரிமென்ட் மாதிரி!",
+        "tone": "reassuring_interested",
+        "closingLine": "எந்த கட்சியைச் சேர்ந்தவரும் முழு செயல்முறையையும் பார்க்கலாம். இதுதான் உண்மையான வெளிப்படைத்தன்மை."
+      },
+      "bn": {
+        "script": "আপনি কেন এমন ভাবছেন বুঝতে পারি, কিন্তু একটা দারুণ ব্যাপার আছে — প্রতিটি নির্বাচনের আগে, সব দলের এজেন্টদের সামনে অন্তত ১,০০০ ভোটের 'মক পোল' হয়। তারা নিজের চোখে দেখে যে মেশিন শূন্য থেকে শুরু হচ্ছে। এটা যেন একটা গ্রুপ সায়েন্স এক্সপেরিমেন্ট!",
+        "tone": "reassuring_interested",
+        "closingLine": "যেকোনো দলের যে কেউ পুরো প্রক্রিয়া দেখতে পারে। এটাই আসল স্বচ্ছতা।"
+      },
+      "sourceRef": "https://eci.gov.in/mock-poll/",
+      "sourcePdf": "https://eci.gov.in/files/file/14038-mock-poll-protocol/"
+    },
+    {
+      "id": "evm_swap",
+      "rumorId": "evm_swap",
+      "trigger": ["swap", "replaced", "switched", "strong room"],
+      "en": {
+        "script": "I had the same concern! But did you know — after voting, each machine is sealed with unique serial numbers and stored in a 'strong room' under 24/7 CCTV and armed guard? Political party agents can literally camp outside and watch. Any broken seal is detected immediately.",
+        "tone": "empathetic_factual",
+        "closingLine": "It's honestly one of the most secure custody chains in the world."
+      },
+      "hi": {
+        "script": "मुझे भी यही चिंता थी! पर क्या आप जानते हैं — वोटिंग के बाद, हर मशीन को यूनीक सीरियल नंबर से सील करके 'स्ट्रॉन्ग रूम' में 24/7 CCTV और सशस्त्र गार्ड की निगरानी में रखा जाता है? पार्टी एजेंट बाहर टेंट लगाकर बैठ सकते हैं। कोई भी सील टूटे तो तुरंत पता चलता है।",
+        "tone": "empathetic_factual",
+        "closingLine": "सच में, यह दुनिया की सबसे सुरक्षित कस्टडी चेन में से एक है।"
+      },
+      "mr": {
+        "script": "मलाही तीच काळजी होती! पण माहीत आहे का — मतदानानंतर, प्रत्येक मशीन युनिक सीरियल नंबरने सील करून 'स्ट्रॉंग रूम' मध्ये 24/7 CCTV आणि सशस्त्र गार्ड यांच्या देखरेखीत ठेवली जाते? पक्षांचे एजंट बाहेर तंबू लावून बसू शकतात. कोणतीही सील तुटली तर लगेच कळतं.",
+        "tone": "empathetic_factual",
+        "closingLine": "खरंच, हे जगातील सर्वात सुरक्षित कस्टडी चेनपैकी एक आहे."
+      },
+      "ta": {
+        "script": "எனக்கும் அதே கவலை இருந்தது! ஆனா தெரியுமா — ஓட்டுப்பதிவுக்குப் பிறகு, ஒவ்வொரு மெஷினும் தனித்துவமான சீரியல் நம்பர்களால் சீல் செய்யப்பட்டு 'ஸ்ட்ராங் ரூம்'ல 24/7 CCTV மற்றும் ஆயுதமேந்திய காவலர் கண்காணிப்பில் வைக்கப்படும்? கட்சி ஏஜெண்ட்ஸ் வெளியே கூடாரம் போட்டு இருக்கலாம். எந்த சீல் உடைஞ்சாலும் உடனே தெரிஞ்சிடும்.",
+        "tone": "empathetic_factual",
+        "closingLine": "உண்மையிலேயே, இது உலகின் மிகவும் பாதுகாப்பான கஸ்டடி செயின்களில் ஒன்று."
+      },
+      "bn": {
+        "script": "আমারও একই চিন্তা ছিল! কিন্তু জানেন কি — ভোটের পরে, প্রতিটি মেশিন ইউনিক সিরিয়াল নম্বর দিয়ে সিল করে 'স্ট্রং রুমে' ২৪/৭ সিসিটিভি ও সশস্ত্র পাহারায় রাখা হয়? দলের এজেন্টরা বাইরে তাঁবু খাটিয়ে থাকতে পারে। কোনো সিল ভাঙলে সঙ্গে সঙ্গে ধরা পড়ে।",
+        "tone": "empathetic_factual",
+        "closingLine": "সত্যিই, এটা পৃথিবীর সবচেয়ে নিরাপদ কাস্টডি চেইনগুলোর একটা।"
+      },
+      "sourceRef": "https://eci.gov.in/strong-room/",
+      "sourcePdf": "https://eci.gov.in/files/file/14039-strong-room-protocol/"
+    },
+    {
+      "id": "no_paper_trail",
+      "rumorId": "no_paper_trail",
+      "trigger": ["no proof", "no paper", "VVPAT", "no receipt", "no trail"],
+      "en": {
+        "script": "Actually, that changed years ago! Every single vote now gets a paper slip printed by a VVPAT machine — you can see it for 7 seconds through a little glass window. Plus, the Supreme Court ordered mandatory cross-verification of paper slips in 5 randomly picked booths per constituency. So there IS a paper trail, and it IS checked!",
+        "tone": "informative_enthusiastic",
+        "closingLine": "Try our EVM simulator to see the VVPAT in action!"
+      },
+      "hi": {
+        "script": "असल में, ये सालों पहले बदल गया! अब हर एक वोट की VVPAT मशीन एक पर्ची छापती है — आप उसे 7 सेकंड तक एक छोटी कांच की खिड़की से देख सकते हैं। और सुप्रीम कोर्ट ने आदेश दिया है कि हर हलके में 5 रैंडम बूथों की पर्चियों की अनिवार्य क्रॉस-वेरिफिकेशन हो। तो पेपर ट्रेल है भी, और जाँची भी जाती है!",
+        "tone": "informative_enthusiastic",
+        "closingLine": "VVPAT को एक्शन में देखने के लिए हमारा EVM सिम्युलेटर ट्राई करें!"
+      },
+      "mr": {
+        "script": "खरं तर, हे वर्षांपूर्वी बदललं! आता प्रत्येक मतासाठी VVPAT मशीन एक पावती छापते — तुम्ही ती 7 सेकंद एका छोट्या काचेच्या खिडकीतून बघू शकता. आणि सर्वोच्च न्यायालयाने प्रत्येक मतदारसंघात 5 यादृच्छिक बूथच्या पावत्यांची अनिवार्य क्रॉस-व्हेरिफिकेशन करण्याचा आदेश दिला आहे. तर पेपर ट्रेल आहेही, आणि तपासली जातेही!",
+        "tone": "informative_enthusiastic",
+        "closingLine": "VVPAT अ‍ॅक्शनमध्ये बघण्यासाठी आमचा EVM सिम्युलेटर वापरा!"
+      },
+      "ta": {
+        "script": "உண்மையிலேயே, அது வருடங்களுக்கு முன்னாடியே மாறிடுச்சு! இப்போ ஒவ்வொரு ஓட்டுக்கும் VVPAT மெஷின் ஒரு ரசீது அச்சிடும் — அதை 7 செக்கன்ட் ஒரு சின்ன கண்ணாடி ஜன்னல் வழியா பார்க்கலாம். மேலும் சுப்ரீம் கோர்ட் ஆர்டர் போட்டிருக்கு — ஒவ்வொரு தொகுதியிலும் 5 ரேண்டம் பூத்களின் ரசீதுகளை கட்டாயமா குறுக்கு சரிபார்ப்பு செய்யணும். அதனால பேப்பர் ட்ரெயில் இருக்கு, செக் பண்ணப்படுது!",
+        "tone": "informative_enthusiastic",
+        "closingLine": "VVPAT செயல்பாட்டில் பார்க்க எங்க EVM சிம்யுலேட்டர் ட்ரை பண்ணுங்க!"
+      },
+      "bn": {
+        "script": "আসলে, এটা বছর আগেই বদলে গেছে! এখন প্রতিটি ভোটের জন্য VVPAT মেশিন একটি রসিদ ছাপে — আপনি একটি ছোট কাঁচের জানালা দিয়ে ৭ সেকেন্ড দেখতে পারেন। আর সুপ্রিম কোর্ট আদেশ দিয়েছে যে প্রতিটি নির্বাচনী এলাকায় ৫টি র‍্যান্ডম বুথের রসিদ বাধ্যতামূলকভাবে ক্রস-ভেরিফাই করতে হবে। তাই পেপার ট্রেইল আছে, এবং চেক করা হয়!",
+        "tone": "informative_enthusiastic",
+        "closingLine": "VVPAT কীভাবে কাজ করে দেখতে আমাদের EVM সিমুলেটর ট্রাই করুন!"
+      },
+      "sourceRef": "https://eci.gov.in/vvpat/",
+      "sourcePdf": "https://eci.gov.in/files/file/14040-vvpat-supreme-court-order/"
+    }
+  ],
+  "audioScripts": {
+    "greatBeepVoiceover": {
+      "en": "Did you hear that, Scout? That long beep is the sound of your choice being locked in a safe. No one can change it now. You just did something big for our country!",
+      "hi": "सुना तुमने, स्काउट? वो लंबी बीप का मतलब है तुम्हारी पसंद एक तिजोरी में बंद हो गई। अब कोई इसे बदल नहीं सकता। तुमने अभी देश के लिए कुछ बड़ा किया!",
+      "mr": "ऐकलंस ना, स्काउट? ती लांबलचक बीप म्हणजे तुमची निवड एका तिजोरीत बंद झाली. आता कोणीही ती बदलू शकत नाही. तुम्ही आत्ता देशासाठी काहीतरी मोठं केलं!",
+      "ta": "கேட்டீங்களா, ஸ்கவுட்? அந்த நீண்ட பீப் என்னன்னா, உங்க சாய்ஸ் ஒரு சேஃப்ல பூட்டிடுச்சு. இப்போ யாராலும் அதை மாத்த முடியாது. நீங்க இப்போ நம்ம நாட்டுக்கு ஒரு பெரிய விஷயம் செஞ்சீங்க!",
+      "bn": "শুনলে তো, স্কাউট? ওই লম্বা বিপটা মানে তোমার পছন্দ একটা সেফে লক হয়ে গেছে। এখন কেউ এটা বদলাতে পারবে না। তুমি এইমাত্র দেশের জন্য একটা বড় কাজ করলে!"
+    },
+    "welcomeMessage": {
+      "en": "Hey neighbor! Welcome to the Friendly Neighbor app. Let me show you how your vote stays safe and strong.",
+      "hi": "अरे पड़ोसी! फ्रेंडली नेबर ऐप में आपका स्वागत है। आइए मैं दिखाता हूँ कि आपका वोट कैसे सुरक्षित और मजबूत रहता है।",
+      "mr": "अरे शेजारी! फ्रेंडली नेबर अ‍ॅपमध्ये तुमचं स्वागत. मी दाखवतो की तुमचं मत कसं सुरक्षित आणि भक्कम राहतं.",
+      "ta": "ஹேய் நெய்பர்! ஃப்ரெண்ட்லி நெய்பர் ஆப்புக்கு வரவேற்கிறோம். உங்க ஓட்டு எப்படி பாதுகாப்பா இருக்குன்னு காட்றேன்.",
+      "bn": "হ্যাঁলো প্রতিবেশী! ফ্রেন্ডলি নেবার অ্যাপে স্বাগতম। আসুন দেখাই আপনার ভোট কীভাবে নিরাপদে থাকে।"
+    }
+  }
+}

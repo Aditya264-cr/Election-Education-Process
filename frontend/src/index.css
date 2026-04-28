@@ -1,0 +1,397 @@
+/* ============================================
+   FRIENDLY NEIGHBOR CIVIC AI — Design System
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+/* Treasure Map styles (loaded globally for Leaflet markers) */
+@import './components/Map/TreasureMap.css';
+
+:root {
+  /* ── Indian Tricolor Palette ── */
+  --saffron: #FF9933;
+  --saffron-light: #FFB366;
+  --saffron-dark: #E67A00;
+  --navy: #000080;
+  --navy-light: #1a1a99;
+  --green-india: #138808;
+  --green-light: #1BAF0A;
+  --white-warm: #FFF8F0;
+  --white-pure: #FFFFFF;
+
+  /* ── Extended Palette ── */
+  --bg-primary: #0A0E27;
+  --bg-secondary: #111638;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-glass: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --text-primary: #F0F0F5;
+  --text-secondary: #A0A4C0;
+  --text-muted: #6B6F90;
+  --accent-glow: rgba(255, 153, 51, 0.3);
+
+  /* ── Kids Mode (Adventure) Palette ── */
+  --kids-gold: #FFD700;
+  --kids-purple: #9B59B6;
+  --kids-green: #2ECC71;
+  --kids-blue: #3498DB;
+  --kids-red: #E74C3C;
+  --kids-bg: #1A0A2E;
+  --kids-bg-card: rgba(155, 89, 182, 0.15);
+
+  /* ── Typography ── */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-devanagari: 'Noto Sans Devanagari', sans-serif;
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* ── Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* ── Shadows ── */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 40px rgba(255, 153, 51, 0.15);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
+
+  /* ── Transitions ── */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --duration-fast: 200ms;
+  --duration-normal: 350ms;
+  --duration-slow: 600ms;
+}
+
+/* ── Reset & Global ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Devanagari text override */
+[lang="hi"] *, [lang="mr"] * {
+  font-family: var(--font-devanagari), var(--font-body);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+/* ── Glassmorphism Panels ── */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
+  color: var(--white-pure);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: var(--radius-full);
+  border: none;
+  transition: all var(--duration-normal) var(--ease-smooth);
+  box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 153, 51, 0.45);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-glass);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--saffron);
+}
+
+/* ── Language Pill ── */
+.lang-pill {
+  display: flex;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+}
+
+.lang-pill button {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--duration-fast) var(--ease-smooth);
+  border-right: 1px solid var(--border-glass);
+}
+
+.lang-pill button:last-child {
+  border-right: none;
+}
+
+.lang-pill button.active {
+  background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
+  color: var(--white-pure);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 153, 51, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(255, 153, 51, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes beepFlash {
+  0% { background: transparent; }
+  10% { background: rgba(255, 0, 0, 0.6); }
+  30% { background: rgba(255, 0, 0, 0.3); }
+  100% { background: transparent; }
+}
+
+@keyframes paperSlide {
+  0% { transform: translateY(-100%); opacity: 0; }
+  20% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fadeInUp { animation: fadeInUp var(--duration-slow) var(--ease-smooth) forwards; }
+.animate-fadeInScale { animation: fadeInScale var(--duration-slow) var(--ease-smooth) forwards; }
+.animate-slideInRight { animation: slideInRight var(--duration-slow) var(--ease-smooth) forwards; }
+.animate-slideInLeft { animation: slideInLeft var(--duration-slow) var(--ease-smooth) forwards; }
+.animate-pulse { animation: pulse 2s var(--ease-smooth) infinite; }
+.animate-glow { animation: glow 3s var(--ease-smooth) infinite; }
+.animate-float { animation: float 3s var(--ease-smooth) infinite; }
+
+/* ── Leaflet Overrides ── */
+.leaflet-container {
+  background: var(--bg-primary) !important;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-glass) !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 18px !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--bg-glass) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-glass) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-glass) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-secondary) !important;
+}
+
+.leaflet-popup-close-button {
+  color: var(--text-secondary) !important;
+}
+
+/* ── Kids Mode Global Overrides ── */
+body.kids-mode {
+  --bg-primary: var(--kids-bg);
+  --bg-secondary: #2D1B4E;
+  --saffron: var(--kids-gold);
+  --saffron-dark: #E6C200;
+  --accent-glow: rgba(255, 215, 0, 0.3);
+}
+
+body.kids-mode .glass-panel {
+  border-color: rgba(155, 89, 182, 0.3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root {
+    --space-lg: 16px;
+    --space-xl: 24px;
+  }
+}

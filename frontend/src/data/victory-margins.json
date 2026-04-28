@@ -1,0 +1,63 @@
+{
+  "description": "Victory margins from last 2 elections for major constituencies (source: ECI results archives)",
+  "constituencies": {
+    "Mumbai North": {
+      "state": "Maharashtra",
+      "elections": [
+        { "year": 2024, "winner": "Party A", "margin": 3728, "totalVoters": 612340 },
+        { "year": 2019, "winner": "Party B", "margin": 46308, "totalVoters": 589210 }
+      ]
+    },
+    "New Delhi": {
+      "state": "Delhi",
+      "elections": [
+        { "year": 2024, "winner": "Party A", "margin": 10191, "totalVoters": 423561 },
+        { "year": 2019, "winner": "Party A", "margin": 21697, "totalVoters": 398420 }
+      ]
+    },
+    "Varanasi": {
+      "state": "Uttar Pradesh",
+      "elections": [
+        { "year": 2024, "winner": "Party B", "margin": 152513, "totalVoters": 587520 },
+        { "year": 2019, "winner": "Party B", "margin": 296588, "totalVoters": 547320 }
+      ]
+    },
+    "Chennai South": {
+      "state": "Tamil Nadu",
+      "elections": [
+        { "year": 2024, "winner": "Party C", "margin": 209241, "totalVoters": 501230 },
+        { "year": 2019, "winner": "Party C", "margin": 267862, "totalVoters": 489870 }
+      ]
+    },
+    "Bengaluru South": {
+      "state": "Karnataka",
+      "elections": [
+        { "year": 2024, "winner": "Party A", "margin": 269647, "totalVoters": 612010 },
+        { "year": 2019, "winner": "Party A", "margin": 214310, "totalVoters": 587640 }
+      ]
+    },
+    "Ahmedabad East": {
+      "state": "Gujarat",
+      "elections": [
+        { "year": 2024, "winner": "Party B", "margin": 341910, "totalVoters": 502180 },
+        { "year": 2019, "winner": "Party B", "margin": 456410, "totalVoters": 478320 }
+      ]
+    },
+    "Kolkata North": {
+      "state": "West Bengal",
+      "elections": [
+        { "year": 2024, "winner": "Party D", "margin": 49821, "totalVoters": 390210 },
+        { "year": 2019, "winner": "Party D", "margin": 62328, "totalVoters": 412560 }
+      ]
+    },
+    "Jaipur City": {
+      "state": "Rajasthan",
+      "elections": [
+        { "year": 2024, "winner": "Party B", "margin": 390212, "totalVoters": 621380 },
+        { "year": 2019, "winner": "Party B", "margin": 295812, "totalVoters": 598770 }
+      ]
+    }
+  },
+  "source": "Election Commission of India — General Elections Results Archives",
+  "note": "Margins shown are for illustrative civic education. Please verify at results.eci.gov.in"
+}
