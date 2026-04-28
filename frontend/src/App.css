@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 20px;
-  background: rgba(10, 14, 39, 0.88) !important;
+  background: rgba(15, 23, 42, 0.92) !important;
   border-radius: 0 !important;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   z-index: 1000;
@@ -37,7 +37,7 @@
 .logo-icon {
   font-size: 1.6rem;
   line-height: 1;
-  animation: float 4s ease infinite;
+  display: inline-block;
 }
 
 .logo-text {
@@ -46,14 +46,21 @@
 }
 
 .logo-title {
+  font-family: var(--font-heading);
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--saffron), #fff, var(--green-india));
+  background: linear-gradient(135deg, var(--primary-light), #fff, var(--success));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.2;
+}
+
+body.kids-mode .logo-title {
+  background: linear-gradient(135deg, #FBBF24, #FF6B35, #34D399);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .logo-subtitle {
@@ -78,11 +85,13 @@
   gap: 6px;
   padding: 7px 14px;
   border-radius: var(--radius-full);
+  font-family: var(--font-display);
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
   transition: all 0.2s var(--ease-smooth);
   white-space: nowrap;
+  min-height: var(--touch-min);
 }
 
 .nav-btn:hover:not(:disabled) {
@@ -91,9 +100,15 @@
 }
 
 .nav-btn.active {
-  background: rgba(255,153,51,0.1);
-  color: var(--saffron);
-  border: 1px solid rgba(255,153,51,0.15);
+  background: rgba(43, 108, 176, 0.1);
+  color: var(--primary-light);
+  border: 1px solid rgba(43, 108, 176, 0.15);
+}
+
+body.kids-mode .nav-btn.active {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--primary-light);
+  border-color: rgba(251, 191, 36, 0.15);
 }
 
 .nav-btn:disabled {
@@ -137,7 +152,7 @@
   align-items: center;
   gap: 12px;
   padding: 20px 32px;
-  background: rgba(10,14,39,0.9);
+  background: rgba(15, 23, 42, 0.9);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255,255,255,0.08);
@@ -149,7 +164,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid rgba(255,255,255,0.1);
-  border-top-color: var(--saffron);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -173,8 +188,8 @@
   position: absolute;
   top: 10px;
   right: 14px;
-  width: 28px;
-  height: 28px;
+  width: var(--touch-min);
+  height: var(--touch-min);
   border-radius: 50%;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.08);
@@ -219,7 +234,11 @@
     justify-content: center;
     border-top: 1px solid rgba(255,255,255,0.04);
     padding-top: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+
+  .header-nav::-webkit-scrollbar { display: none; }
 
   .nav-label {
     display: none;
@@ -233,5 +252,22 @@
     left: 8px;
     right: 8px;
     bottom: 8px;
+  }
+
+  .app-disclaimer {
+    display: none;
+  }
+}
+
+/* Budget phone: wider buttons, bigger text */
+@media (max-width: 480px) {
+  .nav-btn {
+    padding: 10px;
+    min-width: var(--touch-min);
+    justify-content: center;
+  }
+
+  .nav-icon {
+    font-size: 1.2rem;
   }
 }

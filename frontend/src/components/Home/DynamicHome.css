@@ -1,0 +1,324 @@
+/* ── Dynamic Home — Contextual Morphing ── */
+
+.dhome-wrapper {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  width: 92%;
+  max-width: 560px;
+  pointer-events: auto;
+}
+
+.dhome-card {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  max-height: 65vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* ── Badge ── */
+.dhome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+
+.poll-day-badge {
+  background: rgba(239, 68, 68, 0.12);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.edu-badge {
+  background: rgba(43, 108, 176, 0.12);
+  color: var(--primary-light);
+  border: 1px solid rgba(43, 108, 176, 0.2);
+}
+
+.wait-badge {
+  background: rgba(251, 191, 36, 0.12);
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+/* ── Title ── */
+.dhome-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.3;
+}
+
+.dhome-text {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+
+/* ── Actions ── */
+.dhome-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.dhome-action-btn {
+  flex: 1;
+  min-width: 160px;
+  font-size: 0.82rem;
+}
+
+.dhome-action-icon {
+  font-size: 1.1rem;
+}
+
+/* ── Live Indicator ── */
+.dhome-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.12);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  color: #FCA5A5;
+}
+
+.dhome-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  animation: pulse-dot-red 1.2s ease infinite;
+}
+
+@keyframes pulse-dot-red {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ── Stats Row ── */
+.dhome-stats-row {
+  display: flex;
+  gap: 12px;
+}
+
+.dhome-stat {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dhome-stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary-light);
+}
+
+.dhome-stat-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Quiz Section ── */
+.dhome-quiz-section {
+  margin-bottom: 18px;
+}
+
+.dhome-quiz-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.dhome-quiz-card {
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.dhome-quiz-card.correct {
+  border-color: rgba(56, 161, 105, 0.3);
+}
+
+.dhome-quiz-card.wrong {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.dhome-quiz-q {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.dhome-quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.dhome-quiz-opt {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  text-align: left;
+  min-height: var(--touch-min);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dhome-quiz-opt:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.dhome-quiz-opt:disabled { cursor: default; opacity: 0.6; }
+
+.dhome-quiz-opt.correct {
+  background: rgba(56, 161, 105, 0.12) !important;
+  border-color: rgba(56, 161, 105, 0.4) !important;
+  color: #68D391 !important;
+  opacity: 1 !important;
+}
+
+.dhome-quiz-opt.wrong {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #FCA5A5 !important;
+  opacity: 1 !important;
+}
+
+.dhome-quiz-explain {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* ── Counting Explainer ── */
+.dhome-counting-explainer {
+  margin-bottom: 18px;
+}
+
+.dhome-counting-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.dhome-counting-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dhome-counting-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dhome-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dhome-step-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.dhome-step-text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* ── Kids Mode Overrides ── */
+body.kids-mode .dhome-card {
+  background: rgba(26, 10, 46, 0.95);
+  border-color: rgba(155, 89, 182, 0.3);
+}
+
+body.kids-mode .dhome-title {
+  font-size: 1.35rem;
+}
+
+body.kids-mode .dhome-text {
+  font-size: 0.95rem;
+}
+
+body.kids-mode .dhome-action-btn {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dhome-wrapper {
+    width: 96%;
+    bottom: 28px;
+  }
+  .dhome-card { padding: 20px; }
+  .dhome-actions { flex-direction: column; }
+  .dhome-action-btn { min-width: 100%; }
+  .dhome-stats-row { gap: 8px; }
+  .dhome-quiz-options { grid-template-columns: 1fr; }
+}
