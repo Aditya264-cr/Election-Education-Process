@@ -10,6 +10,14 @@
     <meta property="og:title" content="Friendly Neighbor — Civic AI" />
     <meta property="og:description" content="Your civic journey starts right here at home. Find your polling booth, understand the EVM, and see how your vote matters." />
     <meta property="og:type" content="website" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Friendly Neighbor" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
     <title>Friendly Neighbor — Civic AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,5 +25,27 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => {
+              console.log('[App] Service Worker registered:', reg.scope);
+            })
+            .catch((err) => {
+              console.log('[App] Service Worker registration failed:', err);
+            });
+
+          // Listen for sync completion messages
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'SYNC_COMPLETE') {
+              console.log('[App] Sync complete:', event.data.message);
+            }
+          });
+        });
+      }
+    </script>
   </body>
 </html>

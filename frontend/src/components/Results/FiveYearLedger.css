@@ -1,0 +1,308 @@
+/* ── Five-Year Promise Ledger ── */
+
+.ledger-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ledger-container {
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px;
+  position: relative;
+}
+
+.ledger-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.ledger-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text-primary);
+}
+
+/* ── Header ── */
+.ledger-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ledger-icon {
+  font-size: 2.5rem;
+  animation: float 3s ease infinite;
+}
+
+.ledger-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--saffron), #FFD700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ledger-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ── Timer Bar ── */
+.ledger-timer {
+  margin-bottom: 24px;
+}
+
+.ledger-timer-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.ledger-timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--saffron), #FFD700, var(--green-india));
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.ledger-timer-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.ledger-timer-current {
+  color: var(--saffron);
+  font-weight: 600;
+}
+
+/* ── Stats ── */
+.ledger-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ledger-stat {
+  text-align: center;
+  padding: 12px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.ledger-stat-value {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ledger-stat-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ledger-stat.delivered .ledger-stat-value { color: #2ECC71; }
+.ledger-stat.progress .ledger-stat-value  { color: #F39C12; }
+.ledger-stat.unfulfilled .ledger-stat-value { color: #E74C3C; }
+
+/* ── Seed Prompt ── */
+.ledger-seed {
+  text-align: center;
+  padding: 32px;
+  background: rgba(255, 153, 51, 0.04);
+  border: 1px dashed rgba(255, 153, 51, 0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+
+.ledger-seed-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* ── Tabs ── */
+.ledger-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+
+.ledger-tabs::-webkit-scrollbar { display: none; }
+
+.ledger-tab {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.ledger-tab.active {
+  background: rgba(255, 153, 51, 0.1);
+  color: var(--saffron);
+  border-color: rgba(255, 153, 51, 0.2);
+}
+
+.ledger-tab:hover:not(.active) {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Winner Badge ── */
+.ledger-winner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 16px;
+}
+
+/* ── Promise Card ── */
+.ledger-promises {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ledger-promise-card {
+  padding: 16px;
+}
+
+.ledger-promise-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ledger-promise-category {
+  font-size: 1.3rem;
+}
+
+.ledger-promise-topic {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ledger-promise-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* ── Status Row ── */
+.ledger-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ledger-status-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ledger-status-options {
+  display: flex;
+  gap: 6px;
+}
+
+.ledger-status-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.ledger-status-btn:hover {
+  transform: scale(1.15);
+}
+
+.ledger-status-btn.active {
+  transform: scale(1.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* ── Footer ── */
+.ledger-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ledger-footer-note {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ledger-container { padding: 20px 16px; }
+  .ledger-stats { grid-template-columns: repeat(2, 1fr); }
+  .ledger-footer { flex-direction: column; text-align: center; }
+}

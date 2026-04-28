@@ -9,17 +9,21 @@ import ImpactCalculator from './components/Panels/ImpactCalculator';
 import PowerMeter from './components/Panels/PowerMeter';
 import VillageSquare from './components/Panels/VillageSquare';
 import NeighborlyPulse from './components/Panels/NeighborlyPulse';
+import ElectionMorning from './components/PollDay/ElectionMorning';
+import FiveYearLedger from './components/Results/FiveYearLedger';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import KidsModeToggle from './components/KidsModeToggle';
 import { useLanguage } from './hooks/useLanguage';
 import { useKidsMode } from './hooks/useKidsMode';
 import { useConstituency } from './hooks/useConstituency';
+import { useCivicTracker } from './hooks/useCivicTracker';
 import './App.css';
 
 export default function App() {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
   const { selected, loading, findConstituency, clearSelection } = useConstituency();
+  const { trackFeature } = useCivicTracker();
 
   const [showEVM, setShowEVM] = useState(false);
   const [showShadowBallot, setShowShadowBallot] = useState(false);
@@ -28,6 +32,7 @@ export default function App() {
   const [showPowerMeter, setShowPowerMeter] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
   const [showVillageSquare, setShowVillageSquare] = useState(false);
+  const [showLedger, setShowLedger] = useState(false);
 
   const handleLocationSelect = (lat, lng) => {
     findConstituency(lat, lng);
@@ -35,6 +40,11 @@ export default function App() {
 
   return (
     <div className="app-layout">
+      {/* ── Election Morning Greeting (date-triggered) ── */}
+      <ElectionMorning
+        userState={selected?.state || ''}
+      />
+
       {/* ── Top Navigation Bar ── */}
       <header className="app-header glass-panel">
         <div className="header-left">
@@ -50,7 +60,10 @@ export default function App() {
         <nav className="header-nav">
           <button
             className={`nav-btn ${showTimeline ? 'active' : ''}`}
-            onClick={() => setShowTimeline(!showTimeline)}
+            onClick={() => {
+              setShowTimeline(!showTimeline);
+              trackFeature('Timeline');
+            }}
           >
             <span className="nav-icon">📅</span>
             <span className="nav-label">{t('nav_timeline')}</span>
@@ -60,8 +73,10 @@ export default function App() {
             onClick={() => {
               if (isKidsMode) {
                 setShowGreatBeep(true);
+                trackFeature('GreatBeep');
               } else {
                 setShowEVM(true);
+                trackFeature('EVMSimulator');
               }
             }}
           >
@@ -71,7 +86,10 @@ export default function App() {
           {isKidsMode && (
             <button
               className="nav-btn"
-              onClick={() => setShowShadowBallot(true)}
+              onClick={() => {
+                setShowShadowBallot(true);
+                trackFeature('ShadowBallot');
+              }}
             >
               <span className="nav-icon">🎭</span>
               <span className="nav-label">{t('kids_shadow_title')}</span>
@@ -82,8 +100,10 @@ export default function App() {
             onClick={() => {
               if (isKidsMode) {
                 setShowImpact(true);
+                trackFeature('ImpactCalculator');
               } else {
                 setShowPowerMeter(true);
+                trackFeature('PowerMeter');
               }
             }}
             disabled={!selected && !isKidsMode}
@@ -93,10 +113,23 @@ export default function App() {
           </button>
           <button
             className="nav-btn"
-            onClick={() => setShowVillageSquare(true)}
+            onClick={() => {
+              setShowVillageSquare(true);
+              trackFeature('VillageSquare');
+            }}
           >
             <span className="nav-icon">🏘️</span>
             <span className="nav-label">{isKidsMode ? 'Ask Anything!' : 'Village Square'}</span>
+          </button>
+          <button
+            className="nav-btn"
+            onClick={() => {
+              setShowLedger(true);
+              trackFeature('FiveYearLedger');
+            }}
+          >
+            <span className="nav-icon">📒</span>
+            <span className="nav-label">{isKidsMode ? 'Promise Book' : 'Promise Ledger'}</span>
           </button>
         </nav>
 
@@ -159,6 +192,9 @@ export default function App() {
       )}
       {showVillageSquare && (
         <VillageSquare onClose={() => setShowVillageSquare(false)} />
+      )}
+      {showLedger && (
+        <FiveYearLedger onClose={() => setShowLedger(false)} />
       )}
 
       {/* ── Misinformation Firewall Footer ── */}

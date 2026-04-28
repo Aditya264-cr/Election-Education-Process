@@ -1,0 +1,44 @@
+{
+  "name": "Friendly Neighbor — Civic AI",
+  "short_name": "Friendly Neighbor",
+  "description": "Your warm, neighborly guide to understanding elections, finding your polling booth, and learning how your vote shapes India.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0E27",
+  "theme_color": "#0A0E27",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "government", "news"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Voting Machine Simulator",
+      "short_name": "EVM",
+      "description": "Learn how the EVM works",
+      "url": "/?feature=evm",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Village Square Q&A",
+      "short_name": "Q&A",
+      "description": "Ask questions about elections",
+      "url": "/?feature=village-square",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

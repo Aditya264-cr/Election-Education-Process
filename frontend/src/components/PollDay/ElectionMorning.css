@@ -1,0 +1,155 @@
+/* ── Election Morning — Full-Screen Greeting ── */
+
+.em-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(ellipse at center, rgba(10, 14, 39, 0.97), rgba(5, 7, 20, 0.99));
+  backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.em-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.em-container {
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  padding: 40px 32px;
+  position: relative;
+}
+
+/* ── Tricolor Ribbon ── */
+.em-ribbon {
+  display: flex;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 20px rgba(255, 153, 51, 0.3);
+}
+
+.em-ribbon-saffron { flex: 1; background: #FF9933; }
+.em-ribbon-white   { flex: 1; background: #FFFFFF; }
+.em-ribbon-green   { flex: 1; background: #138808; }
+
+/* ── Emblem ── */
+.em-emblem {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: float 3s ease infinite;
+}
+
+/* ── Greeting ── */
+.em-greeting {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FF9933, #FFFFFF 50%, #138808);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+  line-height: 1.3;
+}
+
+/* ── Neighbor Avatar ── */
+.em-neighbor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.em-neighbor-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--green-india));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 16px rgba(255, 153, 51, 0.3);
+}
+
+.em-neighbor-label {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--saffron);
+}
+
+/* ── Speech ── */
+.em-speech {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Booth Tip ── */
+.em-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 153, 51, 0.08);
+  border: 1px solid rgba(255, 153, 51, 0.15);
+  border-radius: var(--radius-full);
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+}
+
+.em-tip-icon { font-size: 1.1rem; }
+.em-tip-text { color: var(--saffron-light); }
+
+/* ── Closing ── */
+.em-closing {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+/* ── Flag animation ── */
+.em-flag {
+  font-size: 3rem;
+  margin-bottom: 24px;
+  animation: flag-wave 2s ease infinite;
+}
+
+@keyframes flag-wave {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* ── CTA ── */
+.em-cta {
+  font-size: 1rem;
+  padding: 14px 36px;
+  border-radius: var(--radius-full);
+  animation: glow 3s ease infinite;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .em-container { padding: 28px 20px; }
+  .em-greeting { font-size: 1.3rem; }
+  .em-speech { font-size: 0.9rem; }
+  .em-emblem { font-size: 3rem; }
+}
