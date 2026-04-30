@@ -15,6 +15,20 @@ function isTraceableOfficialSource(url, sourceLabel) {
 
 function legalHardMatch(question) {
   const q = question.toLowerCase();
+  if (q.includes('eci act 104') || q.includes('article 104') || q.includes('act 104')) {
+    return {
+      blocked: true,
+      answer: 'ECI ACT 104 appears to mean Article 104 of the Constitution of India. I opened the internal law-library copy and highlighted the exact article.',
+      source: 'Article 104 of the Constitution of India',
+      url: 'internal://law-library/constitution-article-104',
+      documentId: 'constitution-article-104',
+      sourceMetadata: {
+        authority: 'Constitution of India',
+        paragraph: 'Article 104',
+        excerpt: 'Penalty for sitting and voting before making oath or affirmation under article 99...',
+      },
+    };
+  }
   if (q.includes('vote without id') || q.includes('without id') || q.includes('no id')) {
     return {
       blocked: true,
@@ -128,7 +142,7 @@ const COMMUNITY_QA = [
   },
 ];
 
-export default function VillageSquare({ onClose }) {
+export default function VillageSquare({ onClose, onOpenDocument }) {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
   const [expandedId, setExpandedId] = useState(null);
@@ -151,6 +165,7 @@ export default function VillageSquare({ onClose }) {
       answer: legalOverride.answer,
       eciSource: legalOverride.source,
       eciUrl: legalOverride.url,
+      documentId: legalOverride.documentId,
       sourceMetadata: legalOverride.sourceMetadata,
       category: "legal_override",
       icon: "⚖️",
@@ -274,14 +289,17 @@ export default function VillageSquare({ onClose }) {
                         <span>{qa.sourceMetadata.paragraph}: {qa.sourceMetadata.excerpt}</span>
                       </details>
                     )}
-                    <a
-                      href={qa.eciUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
                       className="vs-qa-source-link"
+                      disabled={!qa.documentId}
+                      onClick={() => onOpenDocument?.({
+                        documentId: qa.documentId,
+                        query: qa.question || qa.eciSource,
+                      })}
                     >
-                      📄 {qa.eciSource} →
-                    </a>
+                      📄 {qa.documentId ? qa.eciSource : `${qa.eciSource} (ingestion pending)`}
+                    </button>
                     {!complianceOk && (
                       <span className="vs-qa-source-warning">Source could not be traced to an official statute/PDF. Output blocked.</span>
                     )}

@@ -1,0 +1,28 @@
+name: Dead Link Crawler
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Check law-library external links
+        run: python scripts/dead_link_crawler.py
+      - name: Commit manifest repairs
+        run: |
+          if [ -n "$(git status --porcelain backend/law_library/manifest.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add backend/law_library/manifest.json
+            git commit -m "Repair law-library mirror links"
+            git push
+          fi

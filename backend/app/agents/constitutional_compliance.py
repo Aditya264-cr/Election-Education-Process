@@ -54,6 +54,13 @@ VERIFIED_SOURCES = {
         "type": "constitutional_article",
         "issuer": "Constitution of India",
     },
+    "constitution_art104": {
+        "title": "Article 104 of the Constitution of India",
+        "url": "internal://law-library/constitution-article-104",
+        "type": "internal_law_library",
+        "issuer": "Constitution of India",
+        "library_id": "constitution-article-104",
+    },
     "mcc_2024": {
         "title": "Model Code of Conduct, 2024",
         "url": "https://www.eci.gov.in/mcc",
@@ -166,6 +173,12 @@ VERIFIED_CLAIMS = {
         "source_ids": ["eci_handbook_2024"],
         "verified": True,
         "legal_basis": "Section 135C of the Representation of the People Act, 1951",
+    },
+    "constitution_article_104": {
+        "claim": "Article 104 penalizes a person who sits or votes in Parliament before taking the Article 99 oath, while disqualified, or while prohibited by law.",
+        "source_ids": ["constitution_art104"],
+        "verified": True,
+        "legal_basis": "Article 104 of the Constitution of India",
     },
 }
 
@@ -354,6 +367,21 @@ class ConstitutionalComplianceAgent:
             return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": False, "citizen": True, "age": 18})
         if "form 12" in q or "postal ballot" in q:
             return self.evaluate_rule({"asks_form_12": True, "is_service_voter": False, "on_election_duty": False})
+        if "eci act 104" in q or "article 104" in q or "act 104" in q:
+            return {
+                "matched": True,
+                "blocked": False,
+                "rule_id": "constitution_article_104_precision",
+                "action": "OPEN_INTERNAL_DOCUMENT",
+                "message": "ECI ACT 104 appears to mean Article 104 of the Constitution of India.",
+                "document_id": "constitution-article-104",
+                "source_metadata": {
+                    "authority": "Constitution of India",
+                    "paragraph": "Article 104",
+                    "excerpt": "Penalty for sitting and voting before making oath or affirmation under article 99...",
+                },
+                "sources": [self.sources["constitution_art104"]],
+            }
         return None
     
     def get_all_sources(self) -> list:
@@ -450,7 +478,7 @@ class ConstitutionalComplianceAgent:
         """
         url = source.get("url", "")
         src_type = source.get("type", "")
-        if src_type in {"statute", "constitutional_article"}:
+        if src_type in {"statute", "constitutional_article", "internal_law_library"}:
             return True
         parsed = urlparse(url)
         is_gov = parsed.netloc.endswith("gov.in")
