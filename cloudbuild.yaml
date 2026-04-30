@@ -3,6 +3,11 @@ substitutions:
   _SERVICE: election-education-process
 
 steps:
+  - name: python:3.13-slim
+    entrypoint: python
+    args:
+      - scripts/legal_spatial_audit.py
+
   - name: gcr.io/cloud-builders/docker
     args:
       - build

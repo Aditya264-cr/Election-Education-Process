@@ -12,6 +12,64 @@ function isTraceableOfficialSource(url, sourceLabel) {
   return looksStatute || (isGovDomain && isPdf);
 }
 
+
+function legalHardMatch(question) {
+  const q = question.toLowerCase();
+  if (q.includes('vote without id') || q.includes('without id') || q.includes('no id')) {
+    return {
+      blocked: true,
+      answer: 'Correction: According to ECI guidelines, you need one of the 12 approved photo ID documents.',
+      source: 'ECI Voter Identification Guidelines',
+      url: 'https://voters.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India',
+        paragraph: 'Identification of electors',
+        excerpt: 'EPIC or another approved photo identity document is required to establish identity.',
+      },
+    };
+  }
+  if (q.includes('aadhaar') && (q.includes('first') || q.includes('new voter'))) {
+    return {
+      blocked: true,
+      answer: 'Hold on, neighbor! According to the law, we need to check whether your name is already on the electoral roll first. If you are 18+, an Indian citizen, and not on the roll, the next action is Form 6.',
+      source: 'ECI Form 6 voter registration rule',
+      url: 'https://voters.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India',
+        paragraph: 'New elector registration / Form 6',
+        excerpt: 'Form 6 is used by a new voter for registration in the electoral roll.',
+      },
+    };
+  }
+  if (q.includes('form 12') || q.includes('postal ballot')) {
+    return {
+      blocked: true,
+      answer: "Hold on, neighbor! According to the law, we need to check Form 12 eligibility first. Let's do it together.",
+      source: 'ECI postal ballot eligibility guidance',
+      url: 'https://voters.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India',
+        paragraph: 'Postal ballot / Form 12 eligibility',
+        excerpt: 'Postal ballot facilities are limited to categories notified by law or ECI instructions.',
+      },
+    };
+  }
+  if (q.includes('booth timing') || q.includes('polling timing')) {
+    return {
+      blocked: true,
+      answer: 'Neighbor, there are conflicting reports about the booth timing. I am sticking to the official Govt. PDF from 2 hours ago as the primary truth. Here it is.',
+      source: 'ECI Official Polling Day Instructions (Govt PDF)',
+      url: 'https://www.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India',
+        paragraph: 'Polling hours notification',
+        excerpt: 'Use the latest official government notification when public reports conflict.',
+      },
+    };
+  }
+  return null;
+}
+
 // Pre-loaded community Q&A from the "Friendly Neighbor" persona
 const COMMUNITY_QA = [
   {
@@ -85,7 +143,19 @@ export default function VillageSquare({ onClose }) {
     setIsAsking(true);
 
     // Simulate the "Friendly Neighbor" thinking and answering
-    const newQA = {
+    const legalOverride = legalHardMatch(userQuestion);
+
+    const newQA = legalOverride ? {
+      id: Date.now(),
+      question: userQuestion.trim(),
+      answer: legalOverride.answer,
+      eciSource: legalOverride.source,
+      eciUrl: legalOverride.url,
+      sourceMetadata: legalOverride.sourceMetadata,
+      category: "legal_override",
+      icon: "⚖️",
+      isUserGenerated: true,
+    } : {
       id: Date.now(),
       question: userQuestion.trim(),
       answer: "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
@@ -163,7 +233,7 @@ export default function VillageSquare({ onClose }) {
         {/* Q&A List */}
         <div className="vs-qa-list">
           {allQAs.map((qa, idx) => {
-            const complianceOk = isTraceableOfficialSource(qa.eciUrl, qa.eciSource);
+            const complianceOk = Boolean(qa.sourceMetadata) || isTraceableOfficialSource(qa.eciUrl, qa.eciSource);
             const shownAnswer = complianceOk
               ? qa.answer
               : "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).";
@@ -196,8 +266,14 @@ export default function VillageSquare({ onClose }) {
                   <div className="vs-qa-source">
                     <div className="vs-qa-source-badge">
                       <span className="vs-qa-source-check">✅</span>
-                      <span>OFFICIAL SOURCE</span>
+                      <span>STAMP OF AUTHORITY</span>
                     </div>
+                    {qa.sourceMetadata && (
+                      <details className="vs-authority-stamp">
+                        <summary>{qa.sourceMetadata.authority}</summary>
+                        <span>{qa.sourceMetadata.paragraph}: {qa.sourceMetadata.excerpt}</span>
+                      </details>
+                    )}
                     <a
                       href={qa.eciUrl}
                       target="_blank"

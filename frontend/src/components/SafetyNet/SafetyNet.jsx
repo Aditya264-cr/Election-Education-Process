@@ -85,6 +85,11 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
           </div>
 
           <p className="safetynet-message">{error.message}</p>
+          {error.action === 'TRIGGER_SEARCH_BY_EPIC' && (
+            <p className="safetynet-message">
+              We will not guess your booth from map or pincode data. Use Electoral Search with your EPIC number for the authoritative record.
+            </p>
+          )}
 
           {/* Mode Tabs */}
           <div className="safetynet-tabs" role="tablist">
@@ -218,7 +223,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
               className="safetynet-eci-link"
               aria-label="Visit ECI voter portal"
             >
-              Visit ECI Portal →
+              Electoral Search Portal →
             </a>
           </div>
 
