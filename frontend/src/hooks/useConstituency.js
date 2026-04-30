@@ -7,65 +7,75 @@ import indiaPcGeoJson from '../data/india_pc_2019.json';
  * Previous bug: Clicking Pune returned random data because the
  * quadrant-based lookup was incomplete.
  *
- * Fix: Proper point-in-polygon test against constituency bounding boxes,
+ * Fix: Deterministic point-in-polygon test against constituency polygons,
  * with coordinate validation before returning any data.
  *
  * CONSTRAINT: If no match found, DO NOT guess — return graceful fallback.
  */
 
 const CONSTITUENCY_DETAILS = {
-  "Mumbai North": { mp: "Piyush Goyal", total_electors: 1896542, total_voters: 937072, district: "Mumbai Suburban", booth: "St. Xavier's High School, Borivali West" },
-  "Mumbai South": { mp: "Arvind Sawant", total_electors: 1642318, total_voters: 859050, district: "Mumbai City", booth: "Municipal School, Colaba" },
-  "Pune": { mp: "Murlidhar Mohol", total_electors: 2143650, total_voters: 1049515, district: "Pune", booth: "DAV Public School, Kothrud" },
-  "New Delhi": { mp: "Bansuri Swaraj", total_electors: 1478236, total_voters: 810700, district: "New Delhi", booth: "Govt. Boys School, Barakhamba Road" },
-  "Varanasi": { mp: "Narendra Modi", total_electors: 1892451, total_voters: 1065010, district: "Varanasi", booth: "Govt. Inter College, Varanasi" },
-  "Lucknow": { mp: "Rajnath Singh", total_electors: 1942580, total_voters: 975312, district: "Lucknow", booth: "Kendriya Vidyalaya, Lucknow Cantt" },
-  "Chennai South": { mp: "Thamizhachi Thangapandian", total_electors: 1756820, total_voters: 1021089, district: "Chennai", booth: "Corporation School, Mylapore" },
-  "Bengaluru South": { mp: "Tejasvi Surya", total_electors: 2089400, total_voters: 1143322, district: "Bengaluru Urban", booth: "Govt. High School, Jayanagar" },
-  "Ahmedabad East": { mp: "Hasmukhbhai Patel", total_electors: 1824300, total_voters: 955580, district: "Ahmedabad", booth: "Sabarmati Primary School, Maninagar" },
-  "Kolkata North": { mp: "Sudip Bandyopadhyay", total_electors: 1589400, total_voters: 988150, district: "Kolkata", booth: "Kolkata Municipal School, Shyampukur" },
-  "Jaipur City": { mp: "Ramcharan Bohra", total_electors: 1952300, total_voters: 1195000, district: "Jaipur", booth: "Jaipur Nagar Nigam Hall, Civil Lines" },
+  "Mumbai North": { lgd_code: "LGD-MH-MUMBN-PC01", mp: "Piyush Goyal", total_electors: 1896542, total_voters: 937072, district: "Mumbai Suburban", booth: "St. Xavier's High School, Borivali West" },
+  "Mumbai South": { lgd_code: "LGD-MH-MUMBS-PC02", mp: "Arvind Sawant", total_electors: 1642318, total_voters: 859050, district: "Mumbai City", booth: "Municipal School, Colaba" },
+  "Pune": { mp: "Murlidhar Mohol", total_electors: 2143650, total_voters: 1049515, district: "Pune", booth: "DAV Public School, Kothrud", lgd_code: "LGD-MH-PUNE-PC03" },
+  "New Delhi": { lgd_code: "LGD-DL-ND-PC04", mp: "Bansuri Swaraj", total_electors: 1478236, total_voters: 810700, district: "New Delhi", booth: "Govt. Boys School, Barakhamba Road" },
+  "Varanasi": { lgd_code: "LGD-UP-VAR-PC05", mp: "Narendra Modi", total_electors: 1892451, total_voters: 1065010, district: "Varanasi", booth: "Govt. Inter College, Varanasi" },
+  "Lucknow": { lgd_code: "LGD-UP-LKO-PC06", mp: "Rajnath Singh", total_electors: 1942580, total_voters: 975312, district: "Lucknow", booth: "Kendriya Vidyalaya, Lucknow Cantt" },
+  "Chennai South": { lgd_code: "LGD-TN-CHS-PC07", mp: "Thamizhachi Thangapandian", total_electors: 1756820, total_voters: 1021089, district: "Chennai", booth: "Corporation School, Mylapore" },
+  "Bengaluru South": { lgd_code: "LGD-KA-BLS-PC08", mp: "Tejasvi Surya", total_electors: 2089400, total_voters: 1143322, district: "Bengaluru Urban", booth: "Govt. High School, Jayanagar" },
+  "Ahmedabad East": { lgd_code: "LGD-GJ-AHME-PC09", mp: "Hasmukhbhai Patel", total_electors: 1824300, total_voters: 955580, district: "Ahmedabad", booth: "Sabarmati Primary School, Maninagar" },
+  "Kolkata North": { lgd_code: "LGD-WB-KOLN-PC10", mp: "Sudip Bandyopadhyay", total_electors: 1589400, total_voters: 988150, district: "Kolkata", booth: "Kolkata Municipal School, Shyampukur" },
+  "Jaipur City": { lgd_code: "LGD-RJ-JAIP-PC11", mp: "Ramcharan Bohra", total_electors: 1952300, total_voters: 1195000, district: "Jaipur", booth: "Jaipur Nagar Nigam Hall, Civil Lines" },
 };
 
-function getBoundsFromGeometry(geometry) {
-  const rings = geometry?.type === 'Polygon' ? geometry.coordinates : geometry.coordinates?.[0];
-  if (!rings || !rings[0]) return null;
-  const coordinates = rings[0];
-  let minLat = Infinity; let maxLat = -Infinity; let minLng = Infinity; let maxLng = -Infinity;
-  coordinates.forEach(([lng, lat]) => {
-    minLat = Math.min(minLat, lat);
-    maxLat = Math.max(maxLat, lat);
-    minLng = Math.min(minLng, lng);
-    maxLng = Math.max(maxLng, lng);
-  });
-  return [minLat, maxLat, minLng, maxLng];
+function pointInPolygon(lat, lng, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+      (lng < (xj - xi) * (lat - yi) / (yj - yi + Number.EPSILON) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function geometryContains(lat, lng, geometry) {
+  if (!geometry) return false;
+  if (geometry.type === 'Polygon') {
+    return pointInPolygon(lat, lng, geometry.coordinates[0]);
+  }
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.some((poly) => pointInPolygon(lat, lng, poly[0]));
+  }
+  return false;
 }
 
 const CONSTITUENCIES = indiaPcGeoJson.features.map((feature) => {
   const props = feature.properties;
   const details = CONSTITUENCY_DETAILS[props.pc_name] || {};
-  const bounds = getBoundsFromGeometry(feature.geometry);
+  const geometry = feature.geometry;
   return {
     ...props,
     ...details,
-    bounds,
+    selected_lgd_code: props.lgd_code,
+    database_lgd_code: details.lgd_code,
+    database_ac_no: details.ac_no || props.ac_no,
+    geometry,
     center: [props.center_lat, props.center_lng],
     district: details.district || props.district || props.pc_name,
   };
 });
 
 /**
- * Point-in-bounding-box test.
+ * Point-in-polygon test.
  * Returns true if (lat, lng) lies within the constituency bounds.
  */
-function isInBounds(lat, lng, bounds) {
-  const [minLat, maxLat, minLng, maxLng] = bounds;
-  return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+function isInConstituency(lat, lng, constituency) {
+  return geometryContains(lat, lng, constituency.geometry);
 }
 
 /**
- * Find nearest constituency by haversine distance (fallback).
- * Only used when no bounding box matches.
+ * Find nearest constituency by haversine distance (diagnostics only).
  */
 function findNearest(lat, lng) {
   let nearest = null;
@@ -91,38 +101,55 @@ function findNearest(lat, lng) {
  * the expected geo-region for the coordinates.
  */
 function validateCoordinate(lat, lng, constituency, expectedFeatureProps = null) {
-  // Basic sanity: India bounding box
   if (lat < 6 || lat > 37 || lng < 68 || lng > 98) {
     return { valid: false, reason: 'Coordinates outside India' };
   }
 
-  // Verify the constituency bounds actually contain the point
-  if (constituency.bounds && isInBounds(lat, lng, constituency.bounds)) {
-    return { valid: true };
+  if (!constituency.lgd_code) {
+    return { valid: false, triggerEpicSearch: true, reason: `Missing LGD code mapping for ${constituency.pc_name}` };
   }
 
-  // If nearest match but point is very far (> ~100km ≈ ~1° lat/lng)
-  const [clat, clng] = constituency.center;
-  const dist = Math.sqrt((lat - clat) ** 2 + (lng - clng) ** 2);
-  if (dist > 1.5) {
+  if (constituency.selected_lgd_code !== constituency.database_lgd_code) {
     return {
       valid: false,
-      reason: `Point too far from ${constituency.pc_name} (${dist.toFixed(1)}° away)`,
+      triggerEpicSearch: true,
+      reason: `LGD mismatch: selected ${constituency.selected_lgd_code || 'none'} vs database ${constituency.database_lgd_code || 'none'}`,
+    };
+  }
+
+  if (constituency.ac_no !== constituency.database_ac_no) {
+    return {
+      valid: false,
+      triggerEpicSearch: true,
+      reason: `AC mismatch: selected ${constituency.ac_no || 'none'} vs database ${constituency.database_ac_no || 'none'}`,
     };
   }
 
   if (expectedFeatureProps) {
     const samePc = expectedFeatureProps.pc_name === constituency.pc_name;
     const sameState = expectedFeatureProps.state === constituency.state;
-    if (!samePc || !sameState) {
+    const sameLgd = expectedFeatureProps.lgd_code === constituency.database_lgd_code;
+    const sameAc = expectedFeatureProps.ac_no === constituency.database_ac_no;
+    if (!samePc || !sameState || !sameLgd || !sameAc) {
       return {
         valid: false,
-        reason: `Map/Data mismatch: expected ${expectedFeatureProps.pc_name}, ${expectedFeatureProps.state} but resolved ${constituency.pc_name}, ${constituency.state}`,
+        triggerEpicSearch: true,
+        reason: `Map/Data mismatch: expected ${expectedFeatureProps.pc_name}, ${expectedFeatureProps.state}, ${expectedFeatureProps.lgd_code}, AC ${expectedFeatureProps.ac_no} but resolved ${constituency.pc_name}, ${constituency.state}, ${constituency.database_lgd_code}, AC ${constituency.database_ac_no}`,
       };
     }
   }
 
-  return { valid: true, approximate: true };
+  if (isInConstituency(lat, lng, constituency)) {
+    return { valid: true };
+  }
+
+  const [clat, clng] = constituency.center;
+  const dist = Math.sqrt((lat - clat) ** 2 + (lng - clng) ** 2);
+  return {
+    valid: false,
+    triggerEpicSearch: true,
+    reason: `Point outside verified ${constituency.pc_name} polygon (${dist.toFixed(1)} degrees from center)`,
+  };
 }
 
 export function useConstituency() {
@@ -136,7 +163,7 @@ export function useConstituency() {
 
     setTimeout(() => {
       // Step 1: Try precise bounding-box match
-      let match = CONSTITUENCIES.find(c => isInBounds(lat, lng, c.bounds));
+      let match = CONSTITUENCIES.find(c => isInConstituency(lat, lng, c));
 
       if (match) {
         // Step 2: Coordinate validation
@@ -153,7 +180,8 @@ export function useConstituency() {
         setSelected(null);
         setError({
           type: 'COORDINATE_MISMATCH',
-          message: "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
+          message: "Detecting your precise Ward... please wait",
+          action: validation.triggerEpicSearch ? 'TRIGGER_SEARCH_BY_EPIC' : 'VERIFY_ON_ECI',
           reason: validation.reason,
           coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
           helpline: '1950',
@@ -163,39 +191,16 @@ export function useConstituency() {
         return;
       }
 
-      // Step 3: Nearest fallback (with distance check)
+      // Step 3: Fail-safe: do not guess when deterministic PiP fails
       const { constituency: nearest, distance } = findNearest(lat, lng);
-
-      if (nearest && distance < 2.0) {
-        // Close enough — show with "approximate" flag
-        const validation = validateCoordinate(lat, lng, nearest, expectedFeatureProps);
-        if (!validation.valid) {
-          setSelected(null);
-          setError({
-            type: 'COORDINATE_MISMATCH',
-            message: "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
-            reason: validation.reason,
-            coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
-            helpline: '1950',
-            eciUrl: 'https://voters.eci.gov.in',
-          });
-          setLoading(false);
-          return;
-        }
-        setSelected({
-          ...nearest,
-          matchType: 'nearest',
-          approximate: true,
-        });
-        setLoading(false);
-        return;
-      }
+      // Nearest constituency is computed only for diagnostics, never for user-facing guesses.
 
       // Step 4: GRACEFUL DEGRADATION — DO NOT GUESS
       setSelected(null);
       setError({
         type: 'NO_MATCH',
-        message: "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
+        message: "Detecting your precise Ward... please wait",
+        action: 'TRIGGER_SEARCH_BY_EPIC',
         coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
         helpline: '1950',
         eciUrl: 'https://voters.eci.gov.in',
@@ -241,7 +246,14 @@ export function useConstituency() {
       }
 
       if (match) {
-        setSelected({ ...match, matchType: 'pincode' });
+        setSelected(null);
+        setError({
+          type: 'PINCODE_REQUIRES_EPIC',
+          action: 'TRIGGER_SEARCH_BY_EPIC',
+          message: "Pincode is not precise enough for booth data. Please use the official Electoral Search portal.",
+          helpline: '1950',
+          eciUrl: 'https://voters.eci.gov.in',
+        });
       } else {
         setError({
           type: 'PINCODE_NOT_FOUND',
@@ -272,7 +284,14 @@ export function useConstituency() {
       });
 
       if (match) {
-        setSelected({ ...match, matchType: 'manual' });
+        setSelected(null);
+        setError({
+          type: 'MANUAL_REQUIRES_EPIC',
+          action: 'TRIGGER_SEARCH_BY_EPIC',
+          message: "Manual district selection is not precise enough for booth data. Please use the official Electoral Search portal.",
+          helpline: '1950',
+          eciUrl: 'https://voters.eci.gov.in',
+        });
       } else {
         setError({
           type: 'STATE_NOT_FOUND',

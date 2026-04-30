@@ -170,6 +170,76 @@ VERIFIED_CLAIMS = {
 }
 
 
+LEGAL_RULES = {
+    "form_6_registration": {
+        "if": {
+            "age_gte": 18,
+            "citizen": True,
+            "electoral_roll": False,
+        },
+        "then": {
+            "action": "FORM_6",
+            "message": "Use Form 6 to apply for first-time voter registration.",
+        },
+        "source_ids": ["rpa_1950", "eci_voter_guide"],
+        "source_metadata": {
+            "authority": "Election Commission of India",
+            "paragraph": "Voter registration: new elector application / Form 6",
+            "excerpt": "Form 6 is used by a new voter for registration in the electoral roll.",
+        },
+    },
+    "aadhaar_only_poll_day_id": {
+        "if": {
+            "has_aadhaar": True,
+            "electoral_roll": True,
+            "has_epic": False,
+        },
+        "then": {
+            "action": "ALLOW_APPROVED_PHOTO_ID",
+            "message": "Aadhaar is one accepted photo ID document, but your name must be on the electoral roll.",
+        },
+        "source_ids": ["eci_voter_guide"],
+        "source_metadata": {
+            "authority": "Election Commission of India",
+            "paragraph": "Voter identification at polling station",
+            "excerpt": "Electors who do not produce EPIC may produce one of the approved alternate photo identity documents.",
+        },
+    },
+    "no_id_claim_override": {
+        "if": {
+            "claims_no_id_needed": True,
+        },
+        "then": {
+            "action": "CORRECTION",
+            "message": "Correction: According to ECI guidelines, you need one of the 12 approved photo ID documents.",
+        },
+        "source_ids": ["eci_voter_guide"],
+        "source_metadata": {
+            "authority": "Election Commission of India",
+            "paragraph": "Identification of electors",
+            "excerpt": "A voter must establish identity using EPIC or another approved photo identity document.",
+        },
+    },
+    "form_12_migrant_worker": {
+        "if": {
+            "asks_form_12": True,
+            "is_service_voter": False,
+            "on_election_duty": False,
+        },
+        "then": {
+            "action": "CHECK_ELIGIBILITY_FIRST",
+            "message": "Hold on, neighbor! According to the law, we need to check Form 12 eligibility first. Let's do it together.",
+        },
+        "source_ids": ["rpa_1951", "eci_voter_guide"],
+        "source_metadata": {
+            "authority": "Election Commission of India",
+            "paragraph": "Postal ballot / Form 12 eligibility",
+            "excerpt": "Postal ballot facilities are available only to categories notified by law or ECI instructions.",
+        },
+    },
+}
+
+
 class ConstitutionalComplianceAgent:
     """
     Legal Auditor Agent.
@@ -253,6 +323,38 @@ class ConstitutionalComplianceAgent:
         return self._block_response(
             "This statement could not be verified against official records."
         )
+
+    def evaluate_rule(self, facts: dict) -> dict:
+        """
+        Evaluate legal facts through symbolic if-then rules.
+        Returns the first matching action with source metadata.
+        """
+        for rule_id, rule in LEGAL_RULES.items():
+            if self._rule_matches(rule["if"], facts):
+                sources = [self.sources[sid] for sid in rule["source_ids"] if sid in self.sources]
+                return {
+                    "matched": True,
+                    "blocked": False,
+                    "rule_id": rule_id,
+                    "action": rule["then"]["action"],
+                    "message": rule["then"]["message"],
+                    "source_metadata": rule["source_metadata"],
+                    "sources": sources,
+                }
+        return self._block_response(
+            "No symbolic legal rule matched these facts. We need to check the official ECI portal first."
+        )
+
+    def hard_match_text(self, text: str) -> Optional[dict]:
+        """Intercept high-risk legal statements before persona output."""
+        q = text.lower()
+        if "vote without id" in q or "without id" in q or "no id" in q:
+            return self.evaluate_rule({"claims_no_id_needed": True})
+        if "aadhaar" in q and ("first" in q or "new voter" in q):
+            return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": False, "citizen": True, "age": 18})
+        if "form 12" in q or "postal ballot" in q:
+            return self.evaluate_rule({"asks_form_12": True, "is_service_voter": False, "on_election_duty": False})
+        return None
     
     def get_all_sources(self) -> list:
         """Return all sources for the accuracy report."""
@@ -288,6 +390,7 @@ class ConstitutionalComplianceAgent:
                 }
                 for cid, c in self.claims.items()
             },
+            "symbolic_rules": LEGAL_RULES,
             "compliance_note": (
                 "All civic information in this platform is sourced from "
                 "official ECI publications, Constitutional articles, and "
@@ -295,6 +398,17 @@ class ConstitutionalComplianceAgent:
                 "is provided without source verification."
             ),
         }
+
+    @staticmethod
+    def _rule_matches(conditions: dict, facts: dict) -> bool:
+        for key, expected in conditions.items():
+            if key == "age_gte":
+                if facts.get("age", -1) < expected:
+                    return False
+                continue
+            if facts.get(key) != expected:
+                return False
+        return True
 
     def latest_gazette_status(self, last_checked_iso: Optional[str] = None) -> dict:
         """
@@ -350,7 +464,7 @@ class ConstitutionalComplianceAgent:
             "blocked": True,
             "reason": reason,
             "fallback": (
-                "I want to be 100% sure I'm giving you the right info. "
+                "I want to be 100% sure I'm giving you the right info for your area. "
                 "I'm double-checking the official records right now. "
                 "In the meantime, here is the official ECI helpline: 1950. "
                 "You can also check https://voters.eci.gov.in for verified information."

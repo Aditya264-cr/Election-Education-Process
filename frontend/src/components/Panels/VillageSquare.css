@@ -313,6 +313,23 @@
   text-decoration: underline;
 }
 
+.vs-authority-stamp {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.vs-authority-stamp summary {
+  cursor: pointer;
+  color: #2ECC71;
+  font-weight: 700;
+}
+
+.vs-authority-stamp span {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
 .vs-qa-source-warning {
   font-size: 0.72rem;
   color: #fbbf24;
