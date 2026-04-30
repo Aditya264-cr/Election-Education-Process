@@ -17,7 +17,7 @@ From the repository root:
 
 ```sh
 gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
+gcloud config set project gen-lang-client-0532446756
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com containerregistry.googleapis.com
 gcloud builds submit --config cloudbuild.yaml --substitutions _REGION=asia-south1,_SERVICE=election-education-process
 ```
