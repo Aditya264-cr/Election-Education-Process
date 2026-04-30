@@ -9,6 +9,7 @@ import GreatBeep from './components/EVM/GreatBeep';
 import ImpactCalculator from './components/Panels/ImpactCalculator';
 import PowerMeter from './components/Panels/PowerMeter';
 import VillageSquare from './components/Panels/VillageSquare';
+import DocumentViewer from './components/Reader/DocumentViewer';
 import NeighborlyPulse from './components/Panels/NeighborlyPulse';
 import ElectionMorning from './components/PollDay/ElectionMorning';
 import FiveYearLedger from './components/Results/FiveYearLedger';
@@ -43,6 +44,7 @@ export default function App() {
   const [showTimeline, setShowTimeline] = useState(false);
   const [showVillageSquare, setShowVillageSquare] = useState(false);
   const [showLedger, setShowLedger] = useState(false);
+  const [readerDocument, setReaderDocument] = useState(null);
   const [highContrast, setHighContrast] = useState(false);
 
   useEffect(() => {
@@ -245,7 +247,19 @@ export default function App() {
       {showPowerMeter && (
         <PowerMeter constituency={selected} onClose={() => setShowPowerMeter(false)} />
       )}
-      {showVillageSquare && <VillageSquare onClose={() => setShowVillageSquare(false)} />}
+      {showVillageSquare && (
+        <VillageSquare
+          onClose={() => setShowVillageSquare(false)}
+          onOpenDocument={(doc) => setReaderDocument(doc)}
+        />
+      )}
+      {readerDocument && (
+        <DocumentViewer
+          documentId={readerDocument.documentId}
+          query={readerDocument.query}
+          onClose={() => setReaderDocument(null)}
+        />
+      )}
       {showLedger && <FiveYearLedger onClose={() => setShowLedger(false)} />}
 
       {/* ── Misinformation Firewall Footer ── */}

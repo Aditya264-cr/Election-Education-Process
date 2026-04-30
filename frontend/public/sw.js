@@ -8,8 +8,9 @@
  * Stale-While-Revalidate: Multilingual i18n assets
  */
 
-const CACHE_VERSION = 'fn-cache-v1';
-const RUNTIME_CACHE = 'fn-runtime-v1';
+const CACHE_VERSION = 'fn-cache-v2';
+const RUNTIME_CACHE = 'fn-runtime-v2';
+const LAW_LIBRARY_CACHE = 'fn-law-library-v1';
 
 // ── App Shell — Cache-First (survive with ZERO internet) ──
 const APP_SHELL_URLS = [
@@ -61,7 +62,7 @@ self.addEventListener('fetch', (event) => {
 
   // ── Strategy 1: Network-First (live data) ──
   if (isLiveDataRequest(url)) {
-    event.respondWith(networkFirst(request));
+    event.respondWith(isLawLibraryRequest(url) ? staleWhileRevalidateLawLibrary(request) : networkFirst(request));
     return;
   }
 
@@ -84,6 +85,10 @@ function isLiveDataRequest(url) {
     'simulated-results',
   ];
   return livePatterns.some((p) => url.pathname.includes(p) || url.href.includes(p));
+}
+
+function isLawLibraryRequest(url) {
+  return url.pathname.includes('/api/law-library/');
 }
 
 function isI18nRequest(url) {
@@ -128,6 +133,24 @@ async function networkFirst(request) {
       status: 503,
     });
   }
+}
+
+async function staleWhileRevalidateLawLibrary(request) {
+  const cache = await caches.open(LAW_LIBRARY_CACHE);
+  const cached = await cache.match(request);
+  const fetchPromise = fetch(request)
+    .then((response) => {
+      if (response.ok) cache.put(request, response.clone());
+      return response;
+    })
+    .catch(() => cached);
+  return cached || fetchPromise || new Response(JSON.stringify({
+    offline: true,
+    message: 'Document is not cached yet.',
+  }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 503,
+  });
 }
 
 // ── Stale-While-Revalidate Strategy ──

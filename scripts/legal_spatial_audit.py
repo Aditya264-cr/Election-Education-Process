@@ -20,6 +20,7 @@ GEOJSON = ROOT / "frontend" / "src" / "data" / "india_pc_2019.json"
 COMPLIANCE = ROOT / "backend" / "app" / "agents" / "constitutional_compliance.py"
 MAP_MAKER = ROOT / "backend" / "app" / "agents" / "map_maker.py"
 WB_SNAPSHOT = ROOT / "backend" / "data" / "official_wb_phase2_feed.json"
+LAW_MANIFEST = ROOT / "backend" / "law_library" / "manifest.json"
 
 
 def load_module(path: Path, name: str):
@@ -113,11 +114,32 @@ def audit_west_bengal_feed(errors: list[str]) -> None:
                 fail(f"WB booth {booth.get('polling_station_id', '<unknown>')}: missing {field}", errors)
 
 
+def audit_law_library(errors: list[str]) -> None:
+    manifest = json.loads(LAW_MANIFEST.read_text(encoding="utf-8"))
+    expected_order = ["india_code", "indian_kanoon", "prs_legislative_research"]
+    if manifest.get("provider_order") != expected_order:
+        fail("law library provider order must be India Code, Indian Kanoon, then PRS Legislative Research", errors)
+    for document in manifest.get("documents", []):
+        local_path = ROOT / "backend" / "law_library" / document.get("local_path", "")
+        if not local_path.is_file():
+            fail(f"{document.get('id')}: cached law-library document is missing", errors)
+        chain = document.get("source_chain", [])
+        providers = [source.get("provider") for source in chain]
+        for provider in expected_order:
+            if provider not in providers:
+                fail(f"{document.get('id')}: missing retrieval provider {provider}", errors)
+        if document.get("id") == "constitution-article-104":
+            text = local_path.read_text(encoding="utf-8") if local_path.is_file() else ""
+            if "Penalty for sitting and voting before making oath or affirmation under article 99" not in text:
+                fail("constitution-article-104: precision text is missing", errors)
+
+
 def main() -> int:
     errors: list[str] = []
     audit_spatial(errors)
     audit_legal(errors)
     audit_west_bengal_feed(errors)
+    audit_law_library(errors)
     if errors:
         print("Legal & Spatial audit failed:")
         for error in errors:

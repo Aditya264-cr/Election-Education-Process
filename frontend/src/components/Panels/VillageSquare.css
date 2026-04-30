@@ -306,11 +306,19 @@
   font-weight: 500;
   transition: color 0.2s;
   word-break: break-word;
+  text-align: left;
+  padding: 0;
 }
 
 .vs-qa-source-link:hover {
   color: #93C5FD;
   text-decoration: underline;
+}
+
+.vs-qa-source-link:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 .vs-authority-stamp {
