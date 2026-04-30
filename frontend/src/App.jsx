@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import IndiaMap from './components/Map/IndiaMap';
 import NeighborPanel from './components/Panels/NeighborPanel';
@@ -13,6 +13,7 @@ import NeighborlyPulse from './components/Panels/NeighborlyPulse';
 import ElectionMorning from './components/PollDay/ElectionMorning';
 import FiveYearLedger from './components/Results/FiveYearLedger';
 import DynamicHome from './components/Home/DynamicHome';
+import SafetyNet from './components/SafetyNet/SafetyNet';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import KidsModeToggle from './components/KidsModeToggle';
 import { useLanguage } from './hooks/useLanguage';
@@ -31,7 +32,7 @@ const navBtnMotion = {
 export default function App() {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
-  const { selected, loading, findConstituency, clearSelection } = useConstituency();
+  const { selected, loading, error, findConstituency, findByPincode, findByDistrict, clearSelection, allConstituencies } = useConstituency();
   const { trackFeature } = useCivicTracker();
 
   const [showEVM, setShowEVM] = useState(false);
@@ -42,9 +43,15 @@ export default function App() {
   const [showTimeline, setShowTimeline] = useState(false);
   const [showVillageSquare, setShowVillageSquare] = useState(false);
   const [showLedger, setShowLedger] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
 
-  const handleLocationSelect = (lat, lng) => {
-    findConstituency(lat, lng);
+  useEffect(() => {
+    document.body.classList.toggle('high-contrast', highContrast);
+    return () => document.body.classList.remove('high-contrast');
+  }, [highContrast]);
+
+  const handleLocationSelect = (lat, lng, expectedFeatureProps) => {
+    findConstituency(lat, lng, expectedFeatureProps);
   };
 
   // DynamicHome navigation dispatcher
@@ -155,6 +162,13 @@ export default function App() {
         </nav>
 
         <div className="header-right">
+          <button
+            className={`contrast-toggle ${highContrast ? 'active' : ''}`}
+            onClick={() => setHighContrast((prev) => !prev)}
+            aria-label={highContrast ? 'Disable high contrast mode' : 'Enable high contrast mode'}
+          >
+            {highContrast ? '◐ Contrast' : '◑ Contrast'}
+          </button>
           <KidsModeToggle />
           <LanguageSwitcher />
         </div>
@@ -173,11 +187,29 @@ export default function App() {
         )}
 
         {/* Dynamic Home — Contextual Hero */}
-        {!selected && (
+        {!selected && !error && (
           <DynamicHome
             onNavigate={handleDynamicNav}
             constituency={selected}
           />
+        )}
+
+        {/* Safety Net — Graceful Degradation */}
+        {error && (
+          <SafetyNet
+            error={error}
+            onPincodeSearch={findByPincode}
+            onDistrictSelect={findByDistrict}
+            constituencies={allConstituencies}
+            onDismiss={clearSelection}
+          />
+        )}
+
+        {/* Approximate location badge */}
+        {selected?.approximate && (
+          <div className="approx-badge" role="status">
+            📍 Approximate location — results may vary. <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer">Verify on ECI</a>
+          </div>
         )}
 
         {/* Loading overlay */}

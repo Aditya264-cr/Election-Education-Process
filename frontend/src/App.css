@@ -133,6 +133,22 @@ body.kids-mode .nav-btn.active {
   flex-shrink: 0;
 }
 
+.contrast-toggle {
+  border-radius: var(--radius-full);
+  min-height: var(--touch-min);
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+.contrast-toggle.active {
+  color: #111827;
+  background: #facc15;
+  border-color: #facc15;
+}
+
 /* ── Map Area ── */
 .app-map-area {
   flex: 1;
@@ -171,6 +187,34 @@ body.kids-mode .nav-btn.active {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Approximate Location Badge ── */
+.approx-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  padding: 8px 16px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  color: #FBBF24;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.approx-badge a {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.approx-badge a:hover {
+  text-decoration: underline;
 }
 
 /* ── Timeline Drawer ── */
@@ -248,6 +292,10 @@ body.kids-mode .nav-btn.active {
     display: none;
   }
 
+  .contrast-toggle {
+    padding: 8px 10px;
+  }
+
   .timeline-drawer {
     left: 8px;
     right: 8px;
@@ -257,6 +305,20 @@ body.kids-mode .nav-btn.active {
   .app-disclaimer {
     display: none;
   }
+}
+
+body.high-contrast {
+  --text-primary: #ffffff;
+  --text-secondary: #f8fafc;
+  --text-muted: #e2e8f0;
+  --primary: #00ffff;
+  --primary-light: #7dd3fc;
+  --success: #22c55e;
+}
+
+body.high-contrast .glass-panel {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
 }
 
 /* Budget phone: wider buttons, bigger text */

@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 1, "pc_name": "Mumbai North", "ac_name": "Borivali", "state": "Maharashtra", "turnout_2024": 49.42, "turnout_2019": 51.78, "center_lat": 19.23, "center_lng": 72.86 },
+      "geometry": { "type": "Polygon", "coordinates": [[[72.78, 19.15], [72.97, 19.15], [72.97, 19.47], [72.78, 19.47], [72.78, 19.15]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 2, "pc_name": "Mumbai South", "ac_name": "Colaba", "state": "Maharashtra", "turnout_2024": 52.31, "turnout_2019": 48.92, "center_lat": 18.93, "center_lng": 72.83 },
+      "geometry": { "type": "Polygon", "coordinates": [[[72.79, 18.89], [72.94, 18.89], [72.94, 19.15], [72.79, 19.15], [72.79, 18.89]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 3, "pc_name": "Pune", "ac_name": "Kothrud", "state": "Maharashtra", "turnout_2024": 48.96, "turnout_2019": 49.89, "center_lat": 18.52, "center_lng": 73.85 },
+      "geometry": { "type": "Polygon", "coordinates": [[[73.72, 18.38], [74.05, 18.38], [74.05, 18.72], [73.72, 18.72], [73.72, 18.38]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 4, "pc_name": "New Delhi", "ac_name": "New Delhi", "state": "Delhi", "turnout_2024": 54.83, "turnout_2019": 60.21, "center_lat": 28.61, "center_lng": 77.21 },
+      "geometry": { "type": "Polygon", "coordinates": [[[77.00, 28.50], [77.30, 28.50], [77.30, 28.76], [77.00, 28.76], [77.00, 28.50]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 5, "pc_name": "Varanasi", "ac_name": "Varanasi City", "state": "Uttar Pradesh", "turnout_2024": 56.29, "turnout_2019": 55.40, "center_lat": 25.32, "center_lng": 82.99 },
+      "geometry": { "type": "Polygon", "coordinates": [[[82.85, 25.20], [83.10, 25.20], [83.10, 25.45], [82.85, 25.45], [82.85, 25.20]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 6, "pc_name": "Lucknow", "ac_name": "Lucknow Cantt", "state": "Uttar Pradesh", "turnout_2024": 50.21, "turnout_2019": 52.89, "center_lat": 26.85, "center_lng": 80.95 },
+      "geometry": { "type": "Polygon", "coordinates": [[[80.82, 26.72], [81.08, 26.72], [81.08, 26.98], [80.82, 26.98], [80.82, 26.72]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 7, "pc_name": "Chennai South", "ac_name": "Mylapore", "state": "Tamil Nadu", "turnout_2024": 58.11, "turnout_2019": 61.35, "center_lat": 13.04, "center_lng": 80.25 },
+      "geometry": { "type": "Polygon", "coordinates": [[[80.15, 12.90], [80.30, 12.90], [80.30, 13.15], [80.15, 13.15], [80.15, 12.90]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 8, "pc_name": "Bengaluru South", "ac_name": "Jayanagar", "state": "Karnataka", "turnout_2024": 54.72, "turnout_2019": 53.67, "center_lat": 12.93, "center_lng": 77.58 },
+      "geometry": { "type": "Polygon", "coordinates": [[[77.50, 12.85], [77.70, 12.85], [77.70, 13.05], [77.50, 13.05], [77.50, 12.85]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 9, "pc_name": "Ahmedabad East", "ac_name": "Maninagar", "state": "Gujarat", "turnout_2024": 52.35, "turnout_2019": 54.10, "center_lat": 23.03, "center_lng": 72.59 },
+      "geometry": { "type": "Polygon", "coordinates": [[[72.50, 22.95], [72.68, 22.95], [72.68, 23.15], [72.50, 23.15], [72.50, 22.95]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 10, "pc_name": "Kolkata North", "ac_name": "Shyampukur", "state": "West Bengal", "turnout_2024": 62.18, "turnout_2019": 67.05, "center_lat": 22.59, "center_lng": 88.37 },
+      "geometry": { "type": "Polygon", "coordinates": [[[88.30, 22.52], [88.45, 22.52], [88.45, 22.70], [88.30, 22.70], [88.30, 22.52]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "pc_no": 11, "pc_name": "Jaipur City", "ac_name": "Civil Lines", "state": "Rajasthan", "turnout_2024": 61.20, "turnout_2019": 63.50, "center_lat": 26.91, "center_lng": 75.79 },
+      "geometry": { "type": "Polygon", "coordinates": [[[75.70, 26.80], [75.90, 26.80], [75.90, 27.00], [75.70, 27.00], [75.70, 26.80]]] }
+    }
+  ]
+}

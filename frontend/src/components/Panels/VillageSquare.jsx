@@ -3,6 +3,15 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
 import './VillageSquare.css';
 
+function isTraceableOfficialSource(url, sourceLabel) {
+  const safeUrl = (url || '').toLowerCase();
+  const safeSource = (sourceLabel || '').toLowerCase();
+  const looksStatute = safeSource.includes('act') || safeSource.includes('article') || safeSource.includes('rule');
+  const isGovDomain = safeUrl.includes('.gov.in');
+  const isPdf = safeUrl.endsWith('.pdf');
+  return looksStatute || (isGovDomain && isPdf);
+}
+
 // Pre-loaded community Q&A from the "Friendly Neighbor" persona
 const COMMUNITY_QA = [
   {
@@ -79,9 +88,9 @@ export default function VillageSquare({ onClose }) {
     const newQA = {
       id: Date.now(),
       question: userQuestion.trim(),
-      answer: "Great question, neighbor! I'm checking with the Election Commission to make sure I give you the most accurate answer. In the meantime, you can always visit eci.gov.in for official information. The ECI's toll-free helpline is 1800-111-950.",
+      answer: "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
       eciSource: "Election Commission of India — Helpline & Resources",
-      eciUrl: "https://eci.gov.in/",
+      eciUrl: "https://voters.eci.gov.in",
       category: "community",
       icon: "🏘️",
       isUserGenerated: true,
@@ -153,7 +162,12 @@ export default function VillageSquare({ onClose }) {
 
         {/* Q&A List */}
         <div className="vs-qa-list">
-          {allQAs.map((qa, idx) => (
+          {allQAs.map((qa, idx) => {
+            const complianceOk = isTraceableOfficialSource(qa.eciUrl, qa.eciSource);
+            const shownAnswer = complianceOk
+              ? qa.answer
+              : "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).";
+            return (
             <div
               key={qa.id}
               className={`vs-qa-card ${expandedId === qa.id ? 'expanded' : ''} ${qa.isUserGenerated ? 'user-generated' : ''}`}
@@ -176,7 +190,7 @@ export default function VillageSquare({ onClose }) {
                   </div>
 
                   {/* Answer text */}
-                  <p className="vs-qa-a-text">{qa.answer}</p>
+                  <p className="vs-qa-a-text">{shownAnswer}</p>
 
                   {/* ECI Source — The Guarantee */}
                   <div className="vs-qa-source">
@@ -192,18 +206,22 @@ export default function VillageSquare({ onClose }) {
                     >
                       📄 {qa.eciSource} →
                     </a>
+                    {!complianceOk && (
+                      <span className="vs-qa-source-warning">Source could not be traced to an official statute/PDF. Output blocked.</span>
+                    )}
                   </div>
                 </div>
               )}
             </div>
-          ))}
+          );
+          })}
         </div>
 
         {/* Footer disclaimer */}
         <div className="vs-footer">
           <span className="vs-footer-text">
             ℹ️ All answers verified against official Election Commission of India documentation.
-            For time-sensitive queries, call ECI Helpline: <strong>1800-111-950</strong> (toll-free).
+            For time-sensitive queries, call ECI Helpline: <strong>1950</strong>.
           </span>
         </div>
       </div>

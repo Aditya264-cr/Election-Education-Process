@@ -12,6 +12,11 @@ function getScript(rumorId, lang) {
   return script[lang] || script.en || null;
 }
 
+function hasTraceableSource(activeRumor) {
+  const sourceUrl = (activeRumor?.sourceUrl || '').toLowerCase();
+  return sourceUrl.includes('.gov.in') || sourceUrl.endsWith('.pdf');
+}
+
 // Simulated "trending rumor" detection
 function useRumorMonitor() {
   const [activeRumor, setActiveRumor] = useState(null);
@@ -45,6 +50,7 @@ export default function NeighborlyPulse() {
 
   // Get the storyteller "gentle persuasion" script for the active rumor
   const storytellerScript = activeRumor ? getScript(activeRumor.id, lang) : null;
+  const sourceTraceable = hasTraceableSource(activeRumor);
 
   useEffect(() => {
     if (activeRumor) {
@@ -96,7 +102,7 @@ export default function NeighborlyPulse() {
                 </div>
 
                 {/* Gentle Persuasion — Storyteller script */}
-                {storytellerScript && (
+                {storytellerScript && sourceTraceable && (
                   <div className="pulse-storyteller-section">
                     <div className="pulse-section-label">
                       <span className="pulse-badge storyteller">🏘️ YOUR NEIGHBOR SAYS</span>
@@ -108,6 +114,21 @@ export default function NeighborlyPulse() {
                         {storytellerScript.closingLine && (
                           <p className="pulse-storyteller-closing">{storytellerScript.closingLine}</p>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!sourceTraceable && (
+                  <div className="pulse-storyteller-section">
+                    <div className="pulse-section-label">
+                      <span className="pulse-badge storyteller">🏘️ COMPLIANCE CHECK</span>
+                    </div>
+                    <div className="pulse-storyteller-bubble">
+                      <div className="pulse-storyteller-avatar">🏘️</div>
+                      <div className="pulse-storyteller-content">
+                        <p className="pulse-storyteller-text">
+                          I want to be 100% sure I&apos;m giving you the right info for your area. I&apos;m double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).
+                        </p>
                       </div>
                     </div>
                   </div>

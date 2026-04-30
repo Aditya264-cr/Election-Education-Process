@@ -6,7 +6,7 @@ and kids mode logic.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import constituency, timeline, impact, kids
+from app.routers import constituency, timeline, impact, kids, compliance
 
 app = FastAPI(
     title="Friendly Neighbor Civic AI",
@@ -33,6 +33,7 @@ async def health_check():
             "friendly_neighbor": "active",
             "adventure_guide": "active",
             "fact_checker": "standby",
+            "constitutional_compliance": "active",
         },
         "message": "Welcome to the neighborhood! Everything is running smoothly."
     }
@@ -41,3 +42,4 @@ app.include_router(constituency.router, prefix="/api/constituency", tags=["Map-M
 app.include_router(timeline.router, prefix="/api/timeline", tags=["Timeline"])
 app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 app.include_router(kids.router, prefix="/api/kids", tags=["Adventure Guide"])
+app.include_router(compliance.router, prefix="/api/compliance", tags=["Constitutional Compliance"])

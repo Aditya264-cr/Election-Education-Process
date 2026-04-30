@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
+import indiaPcGeoJson from '../../data/india_pc_2019.json';
 
 // Fix default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -48,20 +49,24 @@ const explorerIcon = L.divIcon({
   iconAnchor: [18, 36],
 });
 
-// Sample India constituency GeoJSON (simplified major states outlines)
-const INDIA_GEOJSON = {
-  type: "FeatureCollection",
-  features: [
-    { type: "Feature", properties: { name: "Maharashtra", pc_name: "Mumbai North", pc_no: 1, turnout: 49.42 }, geometry: { type: "Polygon", coordinates: [[[72.6,21.1],[73.8,20.7],[76.5,18.5],[80.9,19.5],[80.3,21.5],[78.5,21.8],[76.0,20.8],[73.5,21.5],[72.6,21.1]]] }},
-    { type: "Feature", properties: { name: "Delhi", pc_name: "New Delhi", pc_no: 4, turnout: 54.83 }, geometry: { type: "Polygon", coordinates: [[[76.84,28.4],[77.35,28.4],[77.35,28.88],[76.84,28.88],[76.84,28.4]]] }},
-    { type: "Feature", properties: { name: "Uttar Pradesh", pc_name: "Varanasi", pc_no: 5, turnout: 56.29 }, geometry: { type: "Polygon", coordinates: [[[77.1,26.3],[84.6,26.3],[84.6,30.4],[77.1,30.4],[77.1,26.3]]] }},
-    { type: "Feature", properties: { name: "Tamil Nadu", pc_name: "Chennai South", pc_no: 7, turnout: 58.11 }, geometry: { type: "Polygon", coordinates: [[[76.2,8.1],[80.4,8.1],[80.4,13.6],[76.2,13.6],[76.2,8.1]]] }},
-    { type: "Feature", properties: { name: "Karnataka", pc_name: "Bengaluru South", pc_no: 8, turnout: 54.72 }, geometry: { type: "Polygon", coordinates: [[[74.0,11.5],[78.6,11.5],[78.6,18.5],[74.0,18.5],[74.0,11.5]]] }},
-    { type: "Feature", properties: { name: "Gujarat", pc_name: "Ahmedabad East", pc_no: 9, turnout: 52.35 }, geometry: { type: "Polygon", coordinates: [[[68.2,20.1],[72.4,20.1],[72.4,24.7],[68.2,24.7],[68.2,20.1]]] }},
-    { type: "Feature", properties: { name: "West Bengal", pc_name: "Kolkata North", pc_no: 10, turnout: 62.18 }, geometry: { type: "Polygon", coordinates: [[[85.8,21.5],[89.9,21.5],[89.9,27.2],[85.8,27.2],[85.8,21.5]]] }},
-    { type: "Feature", properties: { name: "Rajasthan", pc_name: "Jaipur City", pc_no: 11, turnout: 61.20 }, geometry: { type: "Polygon", coordinates: [[[69.5,23.1],[78.3,23.1],[78.3,30.2],[69.5,30.2],[69.5,23.1]]] }},
-  ]
-};
+function pointInPolygon(lat, lng, polygonCoords) {
+  let inside = false;
+  for (let i = 0, j = polygonCoords.length - 1; i < polygonCoords.length; j = i++) {
+    const [xi, yi] = polygonCoords[i];
+    const [xj, yj] = polygonCoords[j];
+    const intersect = ((yi > lat) !== (yj > lat))
+      && (lng < (xj - xi) * (lat - yi) / (yj - yi + Number.EPSILON) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function resolveFeatureForCoordinate(lat, lng) {
+  return indiaPcGeoJson.features.find((feature) => {
+    if (feature.geometry?.type !== 'Polygon') return false;
+    return pointInPolygon(lat, lng, feature.geometry.coordinates[0]);
+  }) || null;
+}
 
 // Simulated polling booth locations (near center of each constituency)
 const POLLING_BOOTHS = [
@@ -165,13 +170,15 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
           const loc = [pos.coords.latitude, pos.coords.longitude];
           setUserPos(loc);
           setFlyTarget(loc);
-          onLocationSelect(pos.coords.latitude, pos.coords.longitude);
+          const featureMatch = resolveFeatureForCoordinate(pos.coords.latitude, pos.coords.longitude);
+          onLocationSelect(pos.coords.latitude, pos.coords.longitude, featureMatch?.properties || null);
         },
         () => {
           // Default: Mumbai
           setUserPos([19.076, 72.8777]);
           setFlyTarget([19.076, 72.8777]);
-          onLocationSelect(19.076, 72.8777);
+          const featureMatch = resolveFeatureForCoordinate(19.076, 72.8777);
+          onLocationSelect(19.076, 72.8777, featureMatch?.properties || null);
         },
         { enableHighAccuracy: true, timeout: 5000 }
       );
@@ -181,7 +188,8 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const handleMapClick = (latlng) => {
     setClickedPos([latlng.lat, latlng.lng]);
     setFlyTarget([latlng.lat, latlng.lng]);
-    onLocationSelect(latlng.lat, latlng.lng);
+    const featureMatch = resolveFeatureForCoordinate(latlng.lat, latlng.lng);
+    onLocationSelect(latlng.lat, latlng.lng, featureMatch?.properties || null);
   };
 
   const handleTreasureClick = (boothId) => {
@@ -195,7 +203,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const kidsLabels = 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png';
 
   const geoJsonStyle = (feature) => ({
-    fillColor: isKidsMode ? getKidsColor(feature) : getColor(feature.properties.turnout),
+    fillColor: isKidsMode ? getKidsColor(feature) : getColor(feature.properties.turnout_2024),
     weight: isKidsMode ? 3 : 2,
     opacity: 1,
     color: isKidsMode ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.4)',
@@ -205,8 +213,8 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
 
   const onEachFeature = (feature, layer) => {
     const name = isKidsMode 
-      ? `🏰 ${feature.properties.name} Kingdom`
-      : feature.properties.name;
+      ? `🏰 ${feature.properties.pc_name} Kingdom`
+      : `${feature.properties.pc_name}, ${feature.properties.state}`;
     layer.bindTooltip(name, {
       permanent: false,
       direction: 'center',
@@ -244,7 +252,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
 
         <GeoJSON
           key={isKidsMode ? 'kids' : 'normal'}
-          data={INDIA_GEOJSON}
+          data={indiaPcGeoJson}
           style={geoJsonStyle}
           onEachFeature={onEachFeature}
         />

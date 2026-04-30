@@ -1,0 +1,232 @@
+/* ── Safety Net — Graceful Degradation UI ── */
+
+.safetynet-overlay {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  width: 92%;
+  max-width: 480px;
+}
+
+.safetynet-card {
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.95) !important;
+  position: relative;
+}
+
+.safetynet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.safetynet-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.safetynet-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.safetynet-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.safetynet-message {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+/* Tabs */
+.safetynet-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.safetynet-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-height: var(--touch-min);
+  transition: all 0.2s;
+}
+
+.safetynet-tab.active {
+  background: rgba(43, 108, 176, 0.1);
+  border-color: rgba(43, 108, 176, 0.2);
+  color: var(--primary-light);
+}
+
+.safetynet-tab-icon {
+  font-size: 1rem;
+}
+
+/* Form */
+.safetynet-form, .safetynet-manual {
+  overflow: hidden;
+}
+
+.safetynet-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.safetynet-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.safetynet-input {
+  flex: 1;
+  padding: 10px 14px;
+  min-height: var(--touch-min);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.safetynet-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.safetynet-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
+}
+
+.safetynet-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  letter-spacing: 0;
+}
+
+.safetynet-submit {
+  white-space: nowrap;
+}
+
+/* Helpline */
+.safetynet-helpline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(56, 161, 105, 0.06);
+  border: 1px solid rgba(56, 161, 105, 0.12);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.safetynet-helpline-icon {
+  font-size: 1.3rem;
+}
+
+.safetynet-helpline-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.safetynet-helpline-text strong {
+  font-size: 0.82rem;
+  color: var(--success);
+}
+
+.safetynet-helpline-text span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.safetynet-eci-link {
+  font-size: 0.72rem;
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.safetynet-eci-link:hover {
+  text-decoration: underline;
+}
+
+/* Debug */
+.safetynet-debug {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .safetynet-overlay {
+    width: 96%;
+    bottom: 20px;
+  }
+
+  .safetynet-card {
+    padding: 18px;
+  }
+
+  .safetynet-input-row {
+    flex-direction: column;
+  }
+
+  .safetynet-helpline {
+    flex-wrap: wrap;
+  }
+}

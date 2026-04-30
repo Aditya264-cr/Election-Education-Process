@@ -313,6 +313,11 @@
   text-decoration: underline;
 }
 
+.vs-qa-source-warning {
+  font-size: 0.72rem;
+  color: #fbbf24;
+}
+
 /* Footer */
 .vs-footer {
   padding-top: 12px;

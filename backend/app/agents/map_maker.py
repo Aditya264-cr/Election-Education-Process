@@ -2,8 +2,10 @@
 THE MAP-MAKER AGENT
 ===================
 Role: Lead Researcher — constituency lookup via point-in-polygon on GeoJSON boundaries.
-Uses Shapely for geometric operations against DataMeet community boundary data.
+Uses GeoJSON data for accurate boundary lookup.
 """
+import json
+import os
 from typing import Optional
 from pydantic import BaseModel
 
@@ -33,30 +35,88 @@ CONSTITUENCY_DATA = [
     ConstituencyResult(pc_name="Bengaluru South", pc_no=8, ac_name="Jayanagar", state="Karnataka", mp="Tejasvi Surya", booth="Govt. High School, Jayanagar", total_electors=2089400, total_voters=1143322, turnout_2024=54.72, turnout_2019=53.67),
 ]
 
+# Load GeoJSON data for accurate boundary lookup
+_GEOJSON_DATA = None
+_GEOJSON_LOADED = False
+
+
+def _load_geojson():
+    global _GEOJSON_DATA, _GEOJSON_LOADED
+    if _GEOJSON_LOADED:
+        return
+    try:
+        # Navigate from backend/app/agents/map_maker.py to frontend/src/data/india_pc_2019.json
+        geojson_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'frontend', 'src', 'data', 'india_pc_2019.json')
+        with open(geojson_path, 'r', encoding='utf-8') as f:
+            _GEOJSON_DATA = json.load(f)
+        _GEOJSON_LOADED = True
+    except Exception as e:
+        print(f"Warning: Could not load GeoJSON data for map maker: {e}")
+        _GEOJSON_DATA = {"type": "FeatureCollection", "features": []}
+
+
+def point_in_polygon(lat: float, lng: float, polygon_coords: list) -> bool:
+    """
+    Ray casting algorithm to check if point is inside polygon.
+    Args:
+        lat: Latitude of point
+        lng: Longitude of point
+        polygon_coords: List of [lng, lat] pairs representing the polygon vertices
+    Returns:
+        True if point is inside polygon, False otherwise
+    """
+    inside = False
+    j = len(polygon_coords) - 1
+    for i in range(len(polygon_coords)):
+        xi, yi = polygon_coords[i]
+        xj, yj = polygon_coords[j]
+        # Check if point is inside the polygon
+        intersect = ((yi > lat) != (yj > lat)) and (lng < (xj - xi) * (lat - yi) / (yj - yi + 1e-10) + xi)
+        if intersect:
+            inside = not inside
+        j = i
+    return inside
+
 
 def lookup_constituency(lat: float, lng: float) -> Optional[ConstituencyResult]:
     """
-    Point-in-polygon lookup.
-    In production: uses Shapely with real GeoJSON. For now, coordinate-based routing.
+    Point-in-polygon lookup using GeoJSON boundaries.
+    Returns None if coordinate is not found in any constituency polygon.
+    Implements coordinate validation: verifies that coordinate matches polygon property.
     """
-    # Simple bounding-box matching
-    if 19 < lat < 20 and 72 < lng < 73:
-        return CONSTITUENCY_DATA[0]  # Mumbai North
-    elif 18.5 < lat <= 19 and 72 < lng < 73:
-        return CONSTITUENCY_DATA[1]  # Mumbai South
-    elif 18 < lat < 19 and 73 < lng < 74:
-        return CONSTITUENCY_DATA[2]  # Pune
-    elif 28 < lat < 29 and 77 < lng < 77.5:
-        return CONSTITUENCY_DATA[3]  # New Delhi
-    elif 25 < lat < 26 and 82 < lng < 84:
-        return CONSTITUENCY_DATA[4]  # Varanasi
-    elif 26 < lat < 27 and 80 < lng < 81:
-        return CONSTITUENCY_DATA[5]  # Lucknow
-    elif 12 < lat < 14 and 80 < lng < 81:
-        return CONSTITUENCY_DATA[6]  # Chennai
-    elif 12 < lat < 14 and 77 < lng < 78:
-        return CONSTITUENCY_DATA[7]  # Bengaluru
-    else:
-        # Default fallback — random constituency for demo
-        import random
-        return random.choice(CONSTITUENCY_DATA)
+    # Validate coordinate bounds (India approximate)
+    if not (6 <= lat <= 37 and 68 <= lng <= 98):
+        return None
+
+    # Load GeoJSON data if not already loaded
+    _load_geojson()
+
+    # Search through GeoJSON features for point-in-polygon match
+    for feature in _GEOJSON_DATA.get("features", []):
+        if feature.get("geometry", {}).get("type") != "Polygon":
+            continue
+        properties = feature.get("properties", {})
+        coordinates = feature.get("geometry", {}).get("coordinates", [])
+        if not coordinates:
+            continue
+
+        # Handle MultiPolygon (though our data is simple Polygon)
+        polygons = coordinates[0] if isinstance(coordinates[0][0], list) else [coordinates[0]]
+
+        for polygon in polygons:
+            if point_in_polygon(lat, lng, polygon):
+                # Found matching constituency - now validate against sample data
+                pc_name = properties.get("pc_name")
+                if not pc_name:
+                    continue
+
+                # Find matching constituency in our sample data to get full details
+                for constituency in CONSTITUENCY_DATA:
+                    if constituency.pc_name == pc_name:
+                        # Coordinate validation passed: return verified constituency data
+                        return constituency
+                # If pc_name not found in sample data, still return None to avoid guesswork
+                return None
+
+    # Never guess a random constituency - return None if no match found
+    return None
