@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
+import Icon from '../DesignSystem/Atoms/Icon';
 import indiaPcGeoJson from '../../data/india_pc_2019.json';
 
 // Fix default marker icon
@@ -16,7 +17,7 @@ L.Icon.Default.mergeOptions({
 
 // Castle icon for kids mode
 const castleIcon = L.divIcon({
-  html: '<div style="font-size:32px;text-align:center;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">🏰</div>',
+  html: '<div class="castle-marker-svg"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20v-9H2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2Z"/><path d="M18 11V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M10 7V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v7"/><path d="M15 22v-4a3 3 0 0 0-6 0v4"/></svg></div>',
   className: 'castle-marker',
   iconSize: [40, 40],
   iconAnchor: [20, 40],
@@ -24,16 +25,16 @@ const castleIcon = L.divIcon({
 
 // Home icon for user location
 const homeIcon = L.divIcon({
-  html: '<div style="font-size:24px;text-align:center;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">🏠</div>',
+  html: '<div class="home-marker-svg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>',
   className: 'home-marker',
   iconSize: [30, 30],
   iconAnchor: [15, 30],
 });
 
-// ✨ Treasure Chest icon for polling booth
+// Treasure Chest icon for polling booth
 const treasureIcon = L.divIcon({
   html: `<div class="treasure-marker-wrapper">
-    <div class="treasure-chest-icon">🎁</div>
+    <div class="treasure-chest-svg"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8H3V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2Z"/><path d="M21 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"/><path d="M12 12v4"/></svg></div>
     <div class="treasure-glow"></div>
   </div>`,
   className: 'treasure-marker',
@@ -43,7 +44,7 @@ const treasureIcon = L.divIcon({
 
 // Explorer's compass icon for user location in treasure mode
 const explorerIcon = L.divIcon({
-  html: '<div style="font-size:28px;text-align:center;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.5));animation:float 3s ease infinite">🧭</div>',
+  html: '<div class="explorer-marker-svg"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>',
   className: 'explorer-marker',
   iconSize: [36, 36],
   iconAnchor: [18, 36],
@@ -149,6 +150,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const [flyTarget, setFlyTarget] = useState(null);
   const [treasureFound, setTreasureFound] = useState(new Set());
   const [immersiveZoom, setImmersiveZoom] = useState(false);
+  const [showAccessibility, setShowAccessibility] = useState(false);
 
   // Listen for immersive zoom event
   useEffect(() => {
@@ -219,19 +221,24 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const kidsLabels = 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png';
 
   const geoJsonStyle = (feature) => ({
-    fillColor: isKidsMode ? getKidsColor(feature) : getColor(feature.properties.turnout_2024),
+    fillColor: isKidsMode ? getKidsColor(feature) : (showAccessibility ? '#3b82f6' : getColor(feature.properties.turnout_2024)),
     weight: isKidsMode ? 3 : 2,
     opacity: 1,
     color: isKidsMode ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.4)',
     dashArray: isKidsMode ? '8 4' : '',
-    fillOpacity: isKidsMode ? 0.35 : 0.45,
+    fillOpacity: isKidsMode ? 0.35 : (showAccessibility ? 0.6 : 0.45),
   });
 
   const onEachFeature = (feature, layer) => {
     const name = isKidsMode 
-      ? `🏰 ${feature.properties.pc_name} Kingdom`
+      ? `${feature.properties.pc_name} Kingdom`
       : `${feature.properties.pc_name}, ${feature.properties.state}`;
-    layer.bindTooltip(name, {
+    
+    const tooltipContent = showAccessibility 
+      ? `♿ ${feature.properties.pc_name}: Dignity Rating 92%`
+      : name;
+
+    layer.bindTooltip(tooltipContent, {
       permanent: false,
       direction: 'center',
       className: 'constituency-tooltip'
@@ -279,7 +286,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
         {/* User location marker */}
         {userPos && (
           <Marker position={userPos} icon={isKidsMode ? explorerIcon : homeIcon}>
-            <Popup>{isKidsMode ? "🧭 You Are Here, Explorer!" : "📍 " + t('map_located')}</Popup>
+            <Popup>{isKidsMode ? "You Are Here, Explorer!" : t('map_located')}</Popup>
           </Marker>
         )}
 
@@ -301,23 +308,21 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
                 <div className="treasure-popup">
                   {isFound ? (
                     <>
-                      <div className="treasure-popup-emoji">🎉</div>
                       <div className="treasure-popup-title">Great job, Scout!</div>
                       <div className="treasure-popup-text">
                         This is <strong>{booth.name}</strong> — where the magic happens on Election Day!
                       </div>
                       <div className="treasure-popup-mission">
-                        🎯 Your mission: Lead your parents here on voting day!
+                        Your mission: Lead your parents here on voting day!
                       </div>
                       {isNearest && (
                         <div className="treasure-popup-distance">
-                          📍 {nearestBooth.distance.toFixed(1)} km from your home base
+                          {nearestBooth.distance.toFixed(1)} km from your home base
                         </div>
                       )}
                     </>
                   ) : (
                     <>
-                      <div className="treasure-popup-emoji">🎁</div>
                       <div className="treasure-popup-title">Treasure Found!</div>
                       <div className="treasure-popup-text">
                         Click to open this treasure chest!
@@ -340,10 +345,30 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
         )}
       </MapContainer>
 
+      {/* ── Dignity Navigator: Accessibility Toggle ── */}
+      <div style={{
+        position: 'absolute',
+        top: 24,
+        right: 16,
+        zIndex: 1000,
+      }}>
+        <button
+          onClick={() => setShowAccessibility(!showAccessibility)}
+          className={`p-4 rounded-2xl shadow-2xl transition-all flex items-center gap-3 border-2 active:scale-95 ${
+            showAccessibility 
+              ? 'bg-blue-600 border-white text-white' 
+              : 'bg-white/90 backdrop-blur-md border-slate-100 text-slate-600 hover:text-blue-600'
+          }`}
+          title="Dignity Navigator - AMF Facilities"
+        >
+          <Icon name="Accessibility" size={24} />
+          <span className="font-black text-xs uppercase tracking-tighter">Dignity Filter</span>
+        </button>
+      </div>
+
       {/* ── Treasure Hunt Overlay Banner ── */}
       {isKidsMode && (
         <div className="treasure-hunt-banner glass-panel animate-fadeInUp">
-          <span className="treasure-banner-icon">🗺️</span>
           <div className="treasure-banner-content">
             <span className="treasure-banner-title">Treasure Hunt!</span>
             <span className="treasure-banner-sub">
@@ -353,7 +378,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
           </div>
           {nearestBooth && (
             <div className="treasure-banner-nearest">
-              <span>📍 Nearest: <strong>{nearestBooth.distance.toFixed(1)} km</strong></span>
+              <span>Nearest: <strong>{nearestBooth.distance.toFixed(1)} km</strong></span>
             </div>
           )}
         </div>
@@ -377,7 +402,6 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
             fontSize: '0.9rem',
             color: 'var(--text-secondary)',
           }}>
-            <span style={{ fontSize: '1.2rem' }}>👆</span>
             <span>{t('map_click_prompt')}</span>
           </div>
         </div>

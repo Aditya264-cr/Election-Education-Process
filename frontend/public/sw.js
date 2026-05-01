@@ -8,8 +8,8 @@
  * Stale-While-Revalidate: Multilingual i18n assets
  */
 
-const CACHE_VERSION = 'fn-cache-v2';
-const RUNTIME_CACHE = 'fn-runtime-v2';
+const CACHE_VERSION = 'fn-cache-v3';
+const RUNTIME_CACHE = 'fn-runtime-v3';
 const LAW_LIBRARY_CACHE = 'fn-law-library-v1';
 
 // ── App Shell — Cache-First (survive with ZERO internet) ──
@@ -17,6 +17,8 @@ const APP_SHELL_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/src/data/india_pc_2019.json', // Heavy map data
+  '/favicon.svg',
 ];
 
 // ── Install: Pre-cache the app shell ──

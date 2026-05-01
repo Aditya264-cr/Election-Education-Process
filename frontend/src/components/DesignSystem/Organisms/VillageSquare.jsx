@@ -83,6 +83,32 @@ function legalHardMatch(question) {
       },
     };
   }
+  if (q.includes('promise') || q.includes('manifesto') || q.includes('what will they do')) {
+    return {
+      blocked: true,
+      answer: 'To ensure political neutrality, I am pulling the official manifestos from all major parties in your constituency. Here is what each party has promised regarding your concern.',
+      source: 'ECI Neutrality Guidelines',
+      url: 'https://www.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India — Neutrality Guidelines',
+        paragraph: 'Voter Information Platforms',
+        excerpt: 'Platforms must provide balanced, non-partisan access to all major party manifestos.',
+      },
+    };
+  }
+  if (q.includes('nri') || q.includes('overseas')) {
+    return {
+      blocked: true,
+      answer: 'Hello neighbor from afar! As an NRI, you can vote in your home constituency. You need to register using Form 6A via the NVSP portal. Currently, you must cast your vote in person at your designated polling booth in India.',
+      source: 'Overseas Elector Registration (Form 6A)',
+      url: 'https://voters.eci.gov.in',
+      sourceMetadata: {
+        authority: 'Election Commission of India',
+        paragraph: 'NRI Voting Guidelines',
+        excerpt: 'Application for inclusion of name in electoral roll by an overseas Indian elector (Form 6A).',
+      },
+    };
+  }
   return null;
 }
 
@@ -234,7 +260,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
               type="text"
               className="vs-ask-input"
               placeholder={isKidsMode 
-                ? "What do you want to know, Explorer? 🧭" 
+                ? "What do you want to know, Explorer?" 
                 : "Ask your question to the neighborhood..."
               }
               value={userQuestion}

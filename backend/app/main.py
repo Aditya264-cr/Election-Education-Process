@@ -6,24 +6,31 @@ and kids mode logic.
 """
 from pathlib import Path
 
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import constituency, timeline, impact, kids, compliance, law_library
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
+from app.routers import constituency, timeline, impact, kids, compliance, law_library, nri
+
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title="Friendly Neighbor Civic AI",
     description="Multi-agent backend for civic education",
     version="1.0.0",
 )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# CORS for frontend
+# CORS for specific frontend origin in production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://friendly-neighbor.gov.in", "http://localhost:5173"], 
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"], # Block unsafe methods
     allow_headers=["*"],
 )
 
@@ -48,6 +55,7 @@ app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 app.include_router(kids.router, prefix="/api/kids", tags=["Adventure Guide"])
 app.include_router(compliance.router, prefix="/api/compliance", tags=["Constitutional Compliance"])
 app.include_router(law_library.router, prefix="/api/law-library", tags=["Internal Law Library"])
+app.include_router(nri.router, prefix="/api/nri", tags=["NRI Neighbor"])
 
 static_dir = Path(__file__).resolve().parent.parent / "static"
 

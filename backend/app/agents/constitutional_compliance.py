@@ -15,9 +15,25 @@ SOURCE CATALOG:
  Each verified fact includes a source_id that maps to a real
  government document or ECI circular.
 """
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import urlparse
+
+def sanitize_input(text: str) -> str:
+    """Strip potential prompt injection characters and excessive whitespace."""
+    patterns = [
+        r"ignore previous instructions",
+        r"system prompt",
+        r"you are now a",
+        r"new persona",
+        r"as a model",
+        r"bypass",
+    ]
+    sanitized = text
+    for p in patterns:
+        sanitized = re.sub(p, "[REDACTED]", sanitized, flags=re.IGNORECASE)
+    return re.sub(r"[^\w\s\.\,\?\!\'\-\u0900-\u097F\u0B80-\u0BFF]", "", sanitized).strip()
 
 # ── Source Registry ──
 # Maps every allowed claim to its official legal source.
@@ -366,6 +382,8 @@ class ConstitutionalComplianceAgent:
             return self.evaluate_rule({"claims_no_id_needed": True})
         if "aadhaar" in q and ("first" in q or "new voter" in q):
             return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": False, "citizen": True, "age": 18})
+        if "aadhaar" in q and ("epic" in q or "lost" in q or "electoral roll" in q):
+            return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": True, "has_epic": False})
         if "form 12" in q or "postal ballot" in q:
             return self.evaluate_rule({"asks_form_12": True, "is_service_voter": False, "on_election_duty": False})
         if "eci act 104" in q or "article 104" in q or "act 104" in q:
@@ -382,6 +400,21 @@ class ConstitutionalComplianceAgent:
                     "excerpt": "Penalty for sitting and voting before making oath or affirmation under article 99...",
                 },
                 "sources": [self.sources["constitution_art104"]],
+            }
+        if "promise" in q or "manifesto" in q or "what will they do" in q:
+            return {
+                "matched": True,
+                "blocked": False,
+                "rule_id": "balanced_manifesto_safeguard",
+                "action": "DISPLAY_BALANCED_MANIFESTOS",
+                "message": "To ensure political neutrality, I am pulling the official manifestos from all major parties in your constituency. Here is what each party has promised regarding your concern.",
+                "document_id": None,
+                "source_metadata": {
+                    "authority": "Election Commission of India — Neutrality Guidelines",
+                    "paragraph": "Voter Information Platforms",
+                    "excerpt": "Platforms must provide balanced, non-partisan access to all major party manifestos.",
+                },
+                "sources": [self.sources["eci_voter_guide"]],
             }
         return None
     

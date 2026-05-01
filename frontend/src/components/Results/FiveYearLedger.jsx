@@ -2,23 +2,23 @@ import { useState, useCallback, useMemo } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
 import { useCivicTracker } from '../../hooks/useCivicTracker';
+import Icon from '../DesignSystem/Atoms/Icon';
+import Button from '../DesignSystem/Atoms/Button';
 import './FiveYearLedger.css';
 
 /**
  * FIVE-YEAR PROMISE LEDGER
  * ========================
- * Post-election promise tracker. Remains dormant until May 4th (Counting Day),
- * then transitions into a 5-year accountability tool.
- *
- * Stores winning promises in localStorage and lets citizens track progress.
+ * Post-election promise tracker. Creates an autonomous accountability system
+ * by locking winning manifestos for 1,825 days.
  */
 
 const STATUS_OPTIONS = [
-  { key: 'not_started', label: 'Not Started', icon: '⏳', color: '#6B6F90' },
-  { key: 'in_progress', label: 'In Progress', icon: '🔨', color: '#F39C12' },
-  { key: 'delivered', label: 'Delivered', icon: '✅', color: '#2ECC71' },
-  { key: 'modified', label: 'Modified', icon: '🔄', color: '#3498DB' },
-  { key: 'unfulfilled', label: 'Unfulfilled', icon: '❌', color: '#E74C3C' },
+  { key: 'not_started', label: 'Not Started', icon: 'Timer', color: '#6B6F90' },
+  { key: 'in_progress', label: 'In Progress', icon: 'Hammer', color: '#F39C12' },
+  { key: 'delivered', label: 'Delivered', icon: 'CheckCircle2', color: '#2ECC71' },
+  { key: 'modified', label: 'Modified', icon: 'RefreshCcw', color: '#3498DB' },
+  { key: 'unfulfilled', label: 'Unfulfilled', icon: 'XCircle', color: '#E74C3C' },
 ];
 
 const SAMPLE_PROMISES = [
@@ -26,38 +26,20 @@ const SAMPLE_PROMISES = [
     constituency: 'Mumbai North',
     winner: 'Candidate A (Party A)',
     promises: [
-      { topic: 'Healthcare', text: 'Build 3 new primary health centers in Borivali and Dahisar within 2 years', category: '🏥' },
-      { topic: 'Roads', text: 'Complete the Western Express Highway expansion by 2028', category: '🛣️' },
-      { topic: 'Water', text: '24x7 water supply to all wards by 2029', category: '💧' },
+      { topic: 'Healthcare', text: 'Build 3 new primary health centers in Borivali and Dahisar within 2 years', category: 'Activity' },
+      { topic: 'Roads', text: 'Complete the Western Express Highway expansion by 2028', category: 'Truck' },
+      { topic: 'Water', text: '24x7 water supply to all wards by 2029', category: 'Droplets' },
     ],
   },
   {
-    constituency: 'New Delhi',
-    winner: 'Candidate B (Party A)',
+    constituency: 'Pune',
+    winner: 'Candidate A (Party A)',
     promises: [
-      { topic: 'Education', text: 'Upgrade 50 government schools to smart classrooms', category: '🏫' },
-      { topic: 'Employment', text: 'Create 10,000 new jobs through skill development centers', category: '💼' },
-      { topic: 'Healthcare', text: 'Free health insurance for all families below ₹5 lakh income', category: '🏥' },
+      { topic: 'Infrastructure', text: 'Complete Metro Line 3 by 2027', category: 'Train' },
+      { topic: 'Environment', text: 'Restore local river ecosystems', category: 'Leaf' },
+      { topic: 'Safety', text: 'CCTV network for all public parks', category: 'Shield' },
     ],
-  },
-  {
-    constituency: 'Chennai South',
-    winner: 'Candidate C (Party C)',
-    promises: [
-      { topic: 'Water', text: 'Desalination plant to solve Chennai water crisis by 2028', category: '💧' },
-      { topic: 'Education', text: 'Tamil medium engineering colleges in every district', category: '🏫' },
-      { topic: 'Roads', text: 'Metro Phase 2 completion ahead of schedule', category: '🛣️' },
-    ],
-  },
-  {
-    constituency: 'Varanasi',
-    winner: 'Candidate D (Party B)',
-    promises: [
-      { topic: 'Heritage', text: 'Complete Kashi Vishwanath Corridor Phase 2', category: '🏛️' },
-      { topic: 'Healthcare', text: 'AIIMS satellite center in Varanasi', category: '🏥' },
-      { topic: 'Agriculture', text: 'MSP guarantee for wheat and rice farmers', category: '🌾' },
-    ],
-  },
+  }
 ];
 
 export default function FiveYearLedger({ onClose }) {
@@ -69,7 +51,6 @@ export default function FiveYearLedger({ onClose }) {
   const [ledger, setLedger] = useState(() => getLedger());
   const [showSeedPrompt, setShowSeedPrompt] = useState(() => getLedger().length === 0);
 
-  // Calculate days since election
   const daysSinceElection = useMemo(() => {
     const electionDay = new Date('2026-05-04');
     const today = new Date();
@@ -80,7 +61,6 @@ export default function FiveYearLedger({ onClose }) {
     return Math.max(0, 5 - Math.floor(daysSinceElection / 365));
   }, [daysSinceElection]);
 
-  // Seed the ledger with sample promises
   const handleSeedLedger = useCallback(() => {
     SAMPLE_PROMISES.forEach((constituency) => {
       constituency.promises.forEach((promise) => {
@@ -102,7 +82,6 @@ export default function FiveYearLedger({ onClose }) {
     setLedger([...updated]);
   }, [updateLedgerStatus]);
 
-  // Group ledger by constituency
   const grouped = useMemo(() => {
     const map = {};
     ledger.forEach((entry, idx) => {
@@ -113,7 +92,6 @@ export default function FiveYearLedger({ onClose }) {
     return Object.entries(map);
   }, [ledger]);
 
-  // Progress stats
   const stats = useMemo(() => {
     const total = ledger.length;
     const delivered = ledger.filter((e) => e.status === 'Delivered').length;
@@ -122,178 +100,137 @@ export default function FiveYearLedger({ onClose }) {
     return { total, delivered, inProgress, unfulfilled };
   }, [ledger]);
 
-  // Export ledger as text
-  const handleExport = useCallback(() => {
-    let text = '═══════════════════════════════════════════\n';
-    text += '  FRIENDLY NEIGHBOR — 5-YEAR PROMISE LEDGER\n';
-    text += '  Election 2026 — Promise Tracker\n';
-    text += '═══════════════════════════════════════════\n\n';
-    
-    grouped.forEach(([constituency, entries]) => {
-      text += `📍 ${constituency} (${entries[0]?.winner || ''})\n`;
-      text += '───────────────────────────────────────\n';
-      entries.forEach((e) => {
-        const statusIcon = STATUS_OPTIONS.find((s) => s.label === e.status)?.icon || '⏳';
-        text += `  ${e.category} ${e.topic}: ${e.text}\n`;
-        text += `     Status: ${statusIcon} ${e.status || 'Not Started'}\n\n`;
-      });
-    });
-
-    text += `\nGenerated on ${new Date().toLocaleDateString('en-IN')}\n`;
-    text += 'Source: Friendly Neighbor Civic AI (friendlyneighbor.app)\n';
-
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'promise-ledger-2026.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [grouped]);
-
   return (
-    <div className="ledger-overlay" id="five-year-ledger">
-      <div className="ledger-container glass-panel animate-fadeInScale">
-        <button className="ledger-close" onClick={onClose} aria-label="Close">✕</button>
-
-        {/* Header */}
-        <div className="ledger-header">
-          <div className="ledger-icon">📒</div>
-          <div>
-            <h2 className="ledger-title">
-              {isKidsMode ? '🏰 The Kingdom Promise Book' : '5-Year Promise Ledger'}
-            </h2>
-            <p className="ledger-subtitle">
-              {isKidsMode
-                ? 'Track what the leaders promised to build!'
-                : 'Hold elected representatives accountable — track their promises for 5 years'}
-            </p>
-          </div>
+    <div className="ledger-view space-y-8 p-1">
+      <header className="flex justify-between items-start">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <Icon name="BookText" size={32} className="text-blue-900" />
+            {isKidsMode ? 'Kingdom Promise Book' : '5-Year Promise Ledger'}
+          </h2>
+          <p className="text-slate-600 font-medium">
+            {isKidsMode ? 'Track what the leaders promised to build!' : 'Autonomous accountability system for 2026-2031 cycle.'}
+          </p>
         </div>
+      </header>
 
-        {/* Timer Bar */}
-        <div className="ledger-timer">
-          <div className="ledger-timer-bar">
-            <div
-              className="ledger-timer-fill"
-              style={{ width: `${Math.min((daysSinceElection / (365 * 5)) * 100, 100)}%` }}
-            />
-          </div>
-          <div className="ledger-timer-labels">
-            <span>May 4, 2026</span>
-            <span className="ledger-timer-current">
-              {daysSinceElection > 0
-                ? `Day ${daysSinceElection} — ${yearsRemaining} year${yearsRemaining !== 1 ? 's' : ''} remaining`
-                : 'Ledger activates on Counting Day (May 4)'}
-            </span>
-            <span>May 2031</span>
-          </div>
+      {/* Accountability Timer */}
+      <div className="bg-slate-900 text-white rounded-3xl p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 scale-150">
+           <Icon name="Timer" size={120} />
         </div>
+        <div className="relative z-10 space-y-4">
+           <div className="flex justify-between text-[10px] font-black uppercase tracking-widest opacity-50">
+             <span>Cycle Launch: May 4, 2026</span>
+             <span>Expiration: May 2031</span>
+           </div>
+           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+             <motion.div 
+               className="h-full bg-blue-400"
+               initial={{ width: 0 }}
+               animate={{ width: `${Math.min((daysSinceElection / (365 * 5)) * 100, 100)}%` }}
+               transition={{ duration: 1 }}
+             />
+           </div>
+           <div className="flex items-center gap-3">
+              <span className="text-4xl font-black">{yearsRemaining} Years</span>
+              <span className="text-sm font-bold opacity-60">Remaining in Term</span>
+           </div>
+        </div>
+      </div>
 
-        {/* Stats */}
-        {stats.total > 0 && (
-          <div className="ledger-stats">
-            <div className="ledger-stat">
-              <span className="ledger-stat-value">{stats.total}</span>
-              <span className="ledger-stat-label">Promises</span>
+      {/* Ledger Stats */}
+      {stats.total > 0 && (
+        <div className="grid grid-cols-4 gap-3">
+          {[
+            { label: 'Total', value: stats.total, color: 'slate' },
+            { label: 'Done', value: stats.delivered, color: 'emerald' },
+            { label: 'Active', value: stats.inProgress, color: 'amber' },
+            { label: 'Missed', value: stats.unfulfilled, color: 'red' }
+          ].map(s => (
+            <div key={s.label} className={`bg-white border border-slate-100 rounded-2xl p-4 text-center shadow-sm`}>
+               <p className={`text-xl font-black text-${s.color}-600`}>{s.value}</p>
+               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
             </div>
-            <div className="ledger-stat delivered">
-              <span className="ledger-stat-value">{stats.delivered}</span>
-              <span className="ledger-stat-label">Delivered</span>
-            </div>
-            <div className="ledger-stat progress">
-              <span className="ledger-stat-value">{stats.inProgress}</span>
-              <span className="ledger-stat-label">In Progress</span>
-            </div>
-            <div className="ledger-stat unfulfilled">
-              <span className="ledger-stat-value">{stats.unfulfilled}</span>
-              <span className="ledger-stat-label">Unfulfilled</span>
-            </div>
+          ))}
+        </div>
+      )}
+
+      {showSeedPrompt && (
+        <div className="bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl p-10 text-center space-y-4">
+           <Icon name="Database" size={48} className="mx-auto text-blue-300" />
+           <p className="font-bold text-blue-900">Your accountability ledger is currently empty.</p>
+           <Button onClick={handleSeedLedger} size="lg" className="px-8">
+             Ingest Winning Manifestos
+           </Button>
+        </div>
+      )}
+
+      {grouped.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {grouped.map(([name], idx) => (
+              <button
+                key={name}
+                onClick={() => setActiveTab(idx)}
+                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeTab === idx ? 'bg-blue-900 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:border-blue-400'}`}
+              >
+                {name}
+              </button>
+            ))}
           </div>
-        )}
 
-        {/* Seed Prompt */}
-        {showSeedPrompt && (
-          <div className="ledger-seed">
-            <p className="ledger-seed-text">
-              {isKidsMode
-                ? '📜 The Promise Book is empty! Load the promises made by the winners?'
-                : '📋 Your ledger is empty. Load the winning candidates\' promises from the 2026 election?'}
-            </p>
-            <button className="btn-primary" onClick={handleSeedLedger}>
-              📥 Load 2026 Promises
-            </button>
-          </div>
-        )}
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter w-fit flex items-center gap-2">
+                 <Icon name="Trophy" size={12} />
+                 Winning Candidate: {grouped[activeTab][1]?.[0]?.winner}
+              </div>
 
-        {/* Promise Cards by Constituency */}
-        {grouped.length > 0 && (
-          <div className="ledger-body">
-            {/* Constituency Tabs */}
-            <div className="ledger-tabs">
-              {grouped.map(([name], idx) => (
-                <button
-                  key={name}
-                  className={`ledger-tab ${activeTab === idx ? 'active' : ''}`}
-                  onClick={() => setActiveTab(idx)}
-                >
-                  📍 {name}
-                </button>
-              ))}
-            </div>
-
-            {/* Active Tab Content */}
-            {grouped[activeTab] && (
-              <div className="ledger-promises">
-                <div className="ledger-winner-badge">
-                  🏆 {grouped[activeTab][1]?.[0]?.winner || 'Winner'}
-                </div>
-
+              <div className="grid gap-3">
                 {grouped[activeTab][1].map((entry) => (
-                  <div key={entry.originalIndex} className="ledger-promise-card glass-card">
-                    <div className="ledger-promise-header">
-                      <span className="ledger-promise-category">{entry.category}</span>
-                      <span className="ledger-promise-topic">{entry.topic}</span>
+                  <div key={entry.originalIndex} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
+                    <div className="flex justify-between items-start">
+                       <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                             <Icon name={entry.category || 'Target'} size={14} className="text-slate-400" />
+                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{entry.topic}</span>
+                          </div>
+                          <p className="text-sm font-bold text-slate-800 leading-relaxed">{entry.text}</p>
+                       </div>
                     </div>
-                    <p className="ledger-promise-text">{entry.text}</p>
 
-                    {/* Status Selector */}
-                    <div className="ledger-status-row">
-                      <span className="ledger-status-label">Status:</span>
-                      <div className="ledger-status-options">
-                        {STATUS_OPTIONS.map((s) => (
-                          <button
-                            key={s.key}
-                            className={`ledger-status-btn ${entry.status === s.label ? 'active' : ''}`}
-                            style={{
-                              borderColor: entry.status === s.label ? s.color : 'transparent',
-                              background: entry.status === s.label ? `${s.color}15` : 'transparent',
-                            }}
-                            onClick={() => handleStatusChange(entry.originalIndex, s.label)}
-                            title={s.label}
-                          >
-                            {s.icon}
-                          </button>
-                        ))}
-                      </div>
+                    <div className="pt-4 border-t border-slate-50 flex items-center justify-between">
+                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Update Status</span>
+                       <div className="flex gap-1.5">
+                          {STATUS_OPTIONS.map((s) => (
+                            <button
+                              key={s.key}
+                              className={`p-2 rounded-lg transition-all ${entry.status === s.label ? 'shadow-inner' : 'hover:bg-slate-50'}`}
+                              style={{ 
+                                background: entry.status === s.label ? `${s.color}20` : 'transparent',
+                                color: entry.status === s.label ? s.color : '#cbd5e1'
+                              }}
+                              onClick={() => handleStatusChange(entry.originalIndex, s.label)}
+                              title={s.label}
+                            >
+                              <Icon name={s.icon} size={18} />
+                            </button>
+                          ))}
+                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="ledger-footer">
-          <button className="btn-secondary" onClick={handleExport}>
-            📄 Export Ledger
-          </button>
-          <span className="ledger-footer-note">
-            Data stored locally on your device. Your privacy is guaranteed.
-          </span>
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </div>
+      )}
     </div>
   );
 }

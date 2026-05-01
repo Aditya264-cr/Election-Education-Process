@@ -41,6 +41,7 @@ def main() -> int:
     changed = False
     now = datetime.now(timezone.utc).isoformat()
 
+    # 1. Audit Law Library
     for document in manifest.get("documents", []):
         chain = document.get("source_chain", [])
         for source in chain:
@@ -63,6 +64,18 @@ def main() -> int:
                     source["mirror_url"] = mirrors[0]["url"]
                     source["repair_note"] = f"Promoted trusted mirror from {mirrors[0]['provider']}"
                 changed = True
+
+    # 2. Audit Manifesto URLs (Civic Alignment Engine)
+    sys.path.append(str(ROOT / "backend"))
+    try:
+        from app.agents.policy_analyst import MOCK_MANIFESTO_DATA
+        for name, data in MOCK_MANIFESTO_DATA.items():
+            url = f"https://eci.gov.in/manifestos/2026/{name.replace(' ', '_')}.pdf"
+            status = check_url(url)
+            if status == 404:
+                print(f"⚠️ ALERT: Manifesto for {name} is dead (404).")
+    except ImportError:
+        pass
 
     if changed:
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

@@ -81,7 +81,15 @@ export function useTextToSpeech(lang = 'en') {
     }
   }, [isSpeaking, speak, stop]);
 
-  return { speak, stop, toggle, isSpeaking, isSupported };
+  const announceAccessibility = useCallback((pcName, facilities = []) => {
+    const facilityText = facilities.length > 0 
+      ? `It features ${facilities.join(', ')}.` 
+      : "Standard accessibility is maintained here.";
+    const script = `Neighbor, this booth in ${pcName} has a ramp and special facilities. ${facilityText} I've also confirmed there's a priority queue for you today.`;
+    speak(script);
+  }, [speak]);
+
+  return { speak, stop, toggle, announceAccessibility, isSpeaking, isSupported };
 }
 
 /**

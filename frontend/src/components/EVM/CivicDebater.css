@@ -1,0 +1,33 @@
+.debater-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.debater-container {
+  background: white;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.debater-container.glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+body.kids-mode .debater-container {
+  background: #fffbeb;
+  border: 4px solid #f97316;
+}
+
+@media (max-width: 640px) {
+  .debater-container {
+    padding: 24px;
+  }
+}

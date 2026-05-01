@@ -11,14 +11,22 @@ const AVAILABLE_STATES = [
   'Karnataka', 'Gujarat', 'West Bengal', 'Rajasthan',
 ];
 
-export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, onDismiss, constituencies = [] }) {
+export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, onEpicSearch, onDismiss, constituencies = [] }) {
   const { lang } = useLanguage();
+  const [epic, setEpic] = useState('');
   const [pincode, setPincode] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [mode, setMode] = useState('message');
+  const [mode, setMode] = useState('epic'); // Default to epic for zero friction
 
   if (!error) return null;
+
+  const handleEpicSubmit = (e) => {
+    e.preventDefault();
+    if (epic.length >= 8) {
+      onEpicSearch(epic);
+    }
+  };
 
   const handlePincodeSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +45,11 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
     .filter((c) => c.state === selectedState)
     .map((c) => c.district)
     .filter((d, idx, arr) => d && arr.indexOf(d) === idx);
+
+  // Human-centric error message
+  const humanMessage = error.message.includes('Detecting') 
+    ? "We're currently syncing with the ECI database to find your precise ward. Please try again in a moment."
+    : error.message;
 
   return (
     <AnimatePresence>
@@ -63,47 +76,124 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
           <div className="p-10">
             <div className="flex items-start gap-6 mb-8">
               <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
-                <Icon name="ShieldInfo" size={40} />
+                <Icon name="LocateFixed" size={40} />
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
                   Verifying Your Location
-                  <ListenButton text={error.message} lang={lang} label="Listen to message" />
+                  <ListenButton text={humanMessage} lang={lang} label="Listen to message" />
                 </h2>
                 <p className="text-slate-600 leading-relaxed text-lg">
-                  {error.message}
+                  {humanMessage}
                 </p>
                 {error.action === 'TRIGGER_SEARCH_BY_EPIC' && (
                   <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 text-amber-800 text-sm">
-                    <Icon name="AlertTriangle" size={18} className="shrink-0" />
+                    <Icon name="ShieldAlert" size={18} className="shrink-0" />
                     <span>To ensure complete accuracy, we do not estimate locations in complex voting zones. Please use your EPIC number for the official record.</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl mb-8">
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl mb-8 overflow-x-auto">
               <button
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                  mode === 'epic' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
+                onClick={() => setMode('epic')}
+              >
+                <Icon name="UserCheck" size={18} />
+                EPIC Search
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
                   mode === 'pincode' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
                 onClick={() => setMode('pincode')}
               >
                 <Icon name="MapPin" size={18} />
-                Search by Pincode
+                Pincode
               </button>
               <button
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
                   mode === 'manual' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
                 onClick={() => setMode('manual')}
               >
                 <Icon name="Map" size={18} />
-                Select District
+                District
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                  mode === 'nri' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
+                onClick={() => setMode('nri')}
+              >
+                <Icon name="Plane" size={18} />
+                NRI / Overseas
               </button>
             </div>
 
             <AnimatePresence mode="wait">
+              {mode === 'nri' && (
+                <motion.div
+                  className="space-y-4 text-center py-4"
+                  key="nri"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <div className="mx-auto w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <Icon name="Globe2" size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Hello, neighbor from afar!</h3>
+                  <p className="text-slate-600">
+                    As a Non-Resident Indian, you can vote in your home constituency. 
+                    You must register using <strong>Form 6A</strong>.
+                  </p>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-left my-4">
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                      <li>Valid Indian Passport & Foreign Visa required.</li>
+                      <li>File online via NVSP portal or send to your local ERO.</li>
+                      <li>Currently, you must cast your vote in person at your polling booth in India.</li>
+                    </ul>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => window.open('https://voters.eci.gov.in', '_blank')}
+                  >
+                    Go to NVSP Portal <Icon name="ExternalLink" size={18} className="ml-2" />
+                  </Button>
+                </motion.div>
+              )}
+
+              {mode === 'epic' && (
+                <motion.form
+                  className="space-y-4"
+                  onSubmit={handleEpicSubmit}
+                  key="epic"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Enter your EPIC (Voter ID) Number</label>
+                  <div className="flex gap-4">
+                    <input
+                      className="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-5 py-3 text-xl font-bold tracking-widest focus:border-blue-500 outline-none transition-colors uppercase"
+                      type="text"
+                      placeholder="e.g. ABC1234567"
+                      value={epic}
+                      onChange={(e) => setEpic(e.target.value.toUpperCase())}
+                      autoFocus
+                    />
+                    <Button type="submit" disabled={epic.length < 8} size="lg">
+                      Search <Icon name="Search" size={18} className="ml-2" />
+                    </Button>
+                  </div>
+                </motion.form>
+              )}
+
               {mode === 'pincode' && (
                 <motion.form
                   className="space-y-4"
@@ -124,7 +214,6 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                       placeholder="e.g. 411001"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                      autoFocus
                     />
                     <Button type="submit" disabled={pincode.length !== 6} size="lg">
                       Search Area
@@ -183,7 +272,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
 
           <div className="bg-slate-50 p-8 flex items-center justify-between border-t border-slate-100">
             <div className="flex items-center gap-4 text-slate-600">
-              <Icon name="Phone" size={24} className="text-blue-600" />
+              <Icon name="PhoneCall" size={24} className="text-blue-600" />
               <div>
                 <p className="text-sm font-bold text-slate-900">Official ECI Helpline: 1950</p>
                 <p className="text-xs">24/7 voter assistance</p>
@@ -196,7 +285,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
               className="flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 transition-colors"
             >
               Electoral Search Portal
-              <Icon name="ArrowRight" size={18} />
+              <Icon name="ExternalLink" size={18} />
             </a>
           </div>
 
