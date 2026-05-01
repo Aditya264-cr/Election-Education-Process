@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import constituency, timeline, impact, kids, compliance, law_library
+from app.routers import constituency, timeline, impact, kids, compliance, law_library, nri
 
 app = FastAPI(
     title="Friendly Neighbor Civic AI",
@@ -48,6 +48,7 @@ app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 app.include_router(kids.router, prefix="/api/kids", tags=["Adventure Guide"])
 app.include_router(compliance.router, prefix="/api/compliance", tags=["Constitutional Compliance"])
 app.include_router(law_library.router, prefix="/api/law-library", tags=["Internal Law Library"])
+app.include_router(nri.router, prefix="/api/nri", tags=["NRI Neighbor"])
 
 static_dir = Path(__file__).resolve().parent.parent / "static"
 

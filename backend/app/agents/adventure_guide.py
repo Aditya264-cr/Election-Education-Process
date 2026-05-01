@@ -1,8 +1,8 @@
 """
-THE ADVENTURE GUIDE AGENT
-==========================
-Role: Kids' Logic — transforms constituency/EVM data into adventure narratives.
-Turns polling booths into castles, constituencies into kingdoms.
+THE ADVENTURE GUIDE AGENT & CIVIC DEBATER
+==========================================
+Role: Kids' Logic & The Game Master — transforms technical data into narratives
+and acts as a friendly debate opponent to teach political reasoning.
 """
 
 ADVENTURE_TRANSFORMS = {
@@ -17,36 +17,41 @@ ADVENTURE_TRANSFORMS = {
     "vote": {"name": "Your Power Stone 💎", "description": "One stone per explorer — use it wisely!"},
 }
 
-QUEST_MESSAGES = [
-    "🗺️ Quest: Find the Great Beep Castle in your Kingdom!",
-    "🏰 The castle awaits! Your Explorer's Badge is ready!",
-    "⚔️ Every kingdom needs its champions — who will you choose?",
-    "🎵 Listen for the magic BEEP — it means your voice was heard!",
-    "🌟 You're one step closer to becoming a Master Explorer!",
-]
-
-
-def transform_to_adventure(key: str) -> dict:
-    """Transform a technical concept into adventure narrative."""
-    return ADVENTURE_TRANSFORMS.get(key, {
-        "name": key.replace("_", " ").title(),
-        "description": "A mysterious part of the adventure!"
-    })
-
-
-def get_quest_message(index: int = 0) -> str:
-    """Get a quest message for the kids mode."""
-    return QUEST_MESSAGES[index % len(QUEST_MESSAGES)]
-
-
-def transform_constituency_for_kids(constituency_data: dict) -> dict:
-    """Transform constituency data into adventure-themed narrative."""
-    return {
-        "kingdom_name": f"The {constituency_data.get('pc_name', 'Unknown')} Kingdom",
-        "castle_name": "The Great Beep Castle 🏰",
-        "castle_location": constituency_data.get("booth", "Somewhere in the kingdom..."),
-        "champion": constituency_data.get("mp", "The Unknown Champion"),
-        "quest_message": QUEST_MESSAGES[0],
-        "explorer_count": constituency_data.get("total_electors", 0),
-        "explorers_who_visited": constituency_data.get("total_voters", 0),
+DEBATE_TOPICS = {
+    "snacks": {
+        "title": "The Great Snack Election",
+        "opponent": "The Apple Knight",
+        "arguments": [
+            "Apples stay crunchy longer than bananas!",
+            "You can make apple pie, but banana pie is... well, mushy!",
+            "Apples have a built-in handle (the stem)!"
+        ],
+        "winning_reasoning": "A good explorer listens to all arguments and picks what helps the kingdom (and their tummy) most!"
     }
+}
+
+class AdventureGuideAgent:
+    """
+    Game Master for kids mode.
+    """
+    def __init__(self):
+        self.adventure_map = ADVENTURE_TRANSFORMS
+        self.topics = DEBATE_TOPICS
+
+    def transform_concept(self, key: str) -> dict:
+        return self.adventure_map.get(key, {"name": key.title(), "description": "A mystery!"})
+
+    def start_debate(self, topic_id: str = "snacks") -> dict:
+        """Starts a friendly debate as the Game Master."""
+        topic = self.topics.get(topic_id)
+        return {
+            "agent": "game_master",
+            "mode": "civic_debater",
+            "title": topic["title"],
+            "opponent": topic["opponent"],
+            "opening_statement": f"Welcome, Explorer! I am {topic['opponent']}. I believe apples are the best snack for the kingdom. What do you think?",
+            "opponent_arguments": topic["arguments"],
+            "lesson": topic["winning_reasoning"]
+        }
+
+adventure_guide_agent = AdventureGuideAgent()

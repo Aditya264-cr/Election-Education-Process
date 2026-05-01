@@ -15,6 +15,7 @@ import ElectionMorning from './components/PollDay/ElectionMorning';
 import FiveYearLedger from './components/Results/FiveYearLedger';
 import DynamicHome from './components/Home/DynamicHome';
 import SafetyNet from './components/SafetyNet/SafetyNet';
+import CivicDebater from './components/EVM/CivicDebater';
 
 import Layout from './components/DesignSystem/Organisms/Layout';
 import Drawer from './components/DesignSystem/Molecules/Drawer';
@@ -47,10 +48,11 @@ export default function App() {
   const navItems = [
     { id: 'timeline', label: t('nav_timeline'), icon: 'Calendar', active: activeDrawer === 'timeline' },
     { id: 'evm', label: isKidsMode ? 'The Great Beep!' : t('nav_evm'), icon: 'Fingerprint', active: activeDrawer === 'evm' },
+    { id: 'debate', label: 'Civic Debate!', icon: 'Sword', active: activeDrawer === 'debate', kidsOnly: true },
     { id: 'impact', label: isKidsMode ? 'Fun Facts!' : t('nav_impact'), icon: isKidsMode ? 'Zap' : 'BarChart3', active: activeDrawer === 'impact' },
     { id: 'village', label: isKidsMode ? 'Ask Anything!' : 'Village Square', icon: 'MessagesSquare', active: activeDrawer === 'village' },
     { id: 'ledger', label: isKidsMode ? 'Promise Book' : 'Promise Ledger', icon: 'BookText', active: activeDrawer === 'ledger' },
-  ];
+  ].filter(item => !item.kidsOnly || (item.kidsOnly && isKidsMode));
 
   const handleNavClick = (id) => {
     setActiveDrawer(prev => prev === id ? null : id);
@@ -166,6 +168,14 @@ export default function App() {
         title={isKidsMode ? 'Promise Book' : 'Promise Ledger'}
       >
         <FiveYearLedger onClose={() => setActiveDrawer(null)} />
+      </Drawer>
+
+      <Drawer 
+        isOpen={activeDrawer === 'debate'} 
+        onClose={() => setActiveDrawer(null)} 
+        title="Civic Debate!"
+      >
+        <CivicDebater onClose={() => setActiveDrawer(null)} />
       </Drawer>
 
       {/* Document Reader - also a Drawer for consistency */}
