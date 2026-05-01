@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import IndiaMap from './components/Map/IndiaMap';
 import NeighborPanel from './components/Panels/NeighborPanel';
 import TimelineBar from './components/Panels/TimelineBar';
@@ -24,22 +24,36 @@ import { useLanguage } from './hooks/useLanguage';
 import { useKidsMode } from './hooks/useKidsMode';
 import { useConstituency } from './hooks/useConstituency';
 import { useCivicTracker } from './hooks/useCivicTracker';
+import rumorFirewall from './data/rumor-firewall.json';
 import './App.css';
 
 export default function App() {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
-  const { selected, loading, error, findConstituency, findByPincode, findByDistrict, findByEpic, clearSelection, allConstituencies } = useConstituency();
+  const { selected, loading, error, findConstituency, findByEpic, clearSelection, allConstituencies } = useConstituency();
   const { trackFeature } = useCivicTracker();
 
   const [activeDrawer, setActiveDrawer] = useState(null);
   const [readerDocument, setReaderDocument] = useState(null);
   const [highContrast, setHighContrast] = useState(false);
+  
+  // Misinformation Firewall state
+  const [activeRumor, setActiveRumor] = useState(null);
 
   useEffect(() => {
     document.body.classList.toggle('high-contrast', highContrast);
     return () => document.body.classList.remove('high-contrast');
   }, [highContrast]);
+
+  // Simulate rumor firewall triggering for Pune area
+  useEffect(() => {
+    if (selected?.pc_name === 'Pune') {
+       const rumor = rumorFirewall.rumors.find(r => r.id === 'polling_cancelled');
+       setActiveRumor(rumor);
+    } else {
+       setActiveRumor(null);
+    }
+  }, [selected]);
 
   const handleLocationSelect = (lat, lng, expectedFeatureProps) => {
     findConstituency(lat, lng, expectedFeatureProps);
@@ -74,18 +88,55 @@ export default function App() {
           selectedConstituency={selected}
         />
 
-        {selected && !isKidsMode && (
+        {/* Misinformation Firewall: Neighbor Alert */}
+        <AnimatePresence>
+          {activeRumor && (
+            <motion.div 
+              initial={{ opacity: 0, x: -50, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute top-24 left-8 z-[2000] max-w-sm"
+            >
+              <div className="bg-red-600 text-white rounded-3xl p-6 shadow-2xl shadow-red-200 border-4 border-white">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 bg-white/20 rounded-xl">
+                    <Icon name="ShieldAlert" size={24} />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-black uppercase tracking-tighter text-sm">Verified Neighbor Alert</h3>
+                    <p className="text-lg font-bold leading-tight">Rumor: {activeRumor.myth}</p>
+                    <div className="bg-white/10 p-3 rounded-xl text-xs font-medium leading-relaxed">
+                      <strong>ECI Fact:</strong> {activeRumor.fact}
+                    </div>
+                    <button 
+                      onClick={() => setActiveRumor(null)}
+                      className="text-[10px] font-black uppercase tracking-widest bg-white text-red-600 px-4 py-2 rounded-full shadow-lg"
+                    >
+                      Got it, thanks neighbor!
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Snapshot Hub: Contextual Drawer for Location Details */}
+        <Drawer
+          isOpen={!!selected && !isKidsMode}
+          onClose={clearSelection}
+          title={selected?.pc_name || 'Snapshot'}
+          footerBadge={true}
+        >
           <NeighborPanel constituency={selected} onClose={clearSelection} />
-        )}
+        </Drawer>
 
         {!selected && !error && (
           <DynamicHome
             onNavigate={(target) => handleNavClick(target)}
             constituency={selected}
             onScrollProgress={(progress) => {
-              // Trigger map zoom if user scrolls down significantly
               if (progress > 0.4 && progress < 0.8) {
-                // We'll handle this in IndiaMap via a new prop
                 window.dispatchEvent(new CustomEvent('map-immersive-zoom', { detail: { progress } }));
               }
             }}
@@ -95,8 +146,8 @@ export default function App() {
         {error && (
           <SafetyNet
             error={error}
-            onPincodeSearch={findByPincode}
-            onDistrictSelect={findByDistrict}
+            onPincodeSearch={() => {}} // Legacy
+            onDistrictSelect={() => {}} // Legacy
             onEpicSearch={findByEpic}
             constituencies={allConstituencies}
             onDismiss={clearSelection}
@@ -145,9 +196,13 @@ export default function App() {
         title={isKidsMode ? 'Fun Facts!' : t('nav_impact')}
       >
         {isKidsMode ? (
-          <ImpactCalculator constituency={selected} onClose={() => setActiveDrawer(null)} />
+          <div className="p-1">
+             <ImpactCalculator constituency={selected} onClose={() => setActiveDrawer(null)} />
+          </div>
         ) : (
-          <PowerMeter constituency={selected} onClose={() => setActiveDrawer(null)} />
+          <div className="p-1">
+             <ImpactCalculator constituency={selected} onClose={() => setActiveDrawer(null)} />
+          </div>
         )}
       </Drawer>
 
