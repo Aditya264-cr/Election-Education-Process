@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
 import Icon from '../DesignSystem/Atoms/Icon';
@@ -6,6 +7,8 @@ import './NeighborPanel.css';
 export default function NeighborPanel({ constituency, onClose }) {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
+  const [priorities, setPriorities] = useState([]);
+  const [alignmentData, setAlignmentData] = useState(null);
 
   if (!constituency) return null;
 
@@ -16,6 +19,21 @@ export default function NeighborPanel({ constituency, onClose }) {
   const accessibility = intelligence.accessibility || {};
   const dignityScore = accessibility.dignity_score || 0;
   const amfFeatures = accessibility.features || [];
+
+  const handlePriorityToggle = (priority) => {
+    const updated = priorities.includes(priority)
+      ? priorities.filter(p => p !== priority)
+      : [...priorities, priority];
+    setPriorities(updated);
+
+    // Fetch alignment
+    fetch(`/api/constituency/${constituency.pc_name}/policy-match?priorities=${updated.join(',')}`)
+      .then(res => res.json())
+      .then(data => setAlignmentData(data))
+      .catch(err => console.error("Policy match failed", err));
+  };
+
+  const PRIORITY_OPTIONS = ["Education", "Healthcare", "Infrastructure", "Water", "Safety", "Jobs", "Environment"];
 
   return (
     <div className={`neighbor-panel glass-panel animate-slideInRight ${isKidsMode ? 'kids' : ''}`}>
@@ -103,7 +121,67 @@ export default function NeighborPanel({ constituency, onClose }) {
           </div>
         </div>
 
-        {/* Layer 3: Identity Cards */}
+        {/* Layer 3: Civic Alignment Engine (Policy Compass) */}
+        <div className="space-y-4 pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-2 px-1">
+            <Icon name="Compass" size={16} className="text-blue-900" />
+            <h3 className="font-bold text-slate-800 text-sm uppercase tracking-tight">Policy Compass</h3>
+          </div>
+          
+          <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 space-y-6">
+            <div className="space-y-3">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Your Priorities</p>
+              <div className="flex flex-wrap gap-2">
+                {PRIORITY_OPTIONS.map(p => (
+                  <button
+                    key={p}
+                    onClick={() => handlePriorityToggle(p)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${priorities.includes(p) ? 'bg-blue-900 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:border-blue-400'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {alignmentData && (
+              <div className="space-y-4 animate-fadeIn">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alignment Scores</p>
+                <div className="space-y-3">
+                  {alignmentData.alignments.map((a, i) => (
+                    <div key={i} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-slate-900">{a.candidate}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-900" style={{ width: `${a.alignment_score}%` }} />
+                          </div>
+                          <span className="text-xs font-black text-blue-900">{a.alignment_score}%</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        {a.matched_promises.slice(0, 2).map((p, j) => (
+                          <p key={j} className="text-[10px] text-slate-600 flex gap-2">
+                            <Icon name="Check" size={10} className="text-emerald-500 mt-0.5 shrink-0" />
+                            {p}
+                          </p>
+                        ))}
+                      </div>
+                      <a href={a.manifesto_url} target="_blank" className="block text-[9px] font-bold text-blue-600 uppercase tracking-tighter hover:underline">
+                        View Official Manifesto PDF
+                      </a>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[9px] text-slate-400 italic leading-tight px-1">
+                  {alignmentData.neutrality_disclaimer}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Layer 4: Identity Cards */}
         <div className="np-cards grid grid-cols-2 gap-3">
           <div className="np-card col-span-2">
             <div className="np-card-label">{t('panel_mp')}</div>
@@ -129,7 +207,7 @@ export default function NeighborPanel({ constituency, onClose }) {
           </div>
         </div>
 
-        {/* Layer 4: Progressive Disclosure Action */}
+        {/* Layer 5: Progressive Disclosure Action */}
         <a 
           href="https://voters.eci.gov.in" 
           target="_blank" 

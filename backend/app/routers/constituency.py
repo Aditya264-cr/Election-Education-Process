@@ -1,10 +1,12 @@
 import asyncio
+from typing import List
 from fastapi import APIRouter, Query, HTTPException
 from app.agents.map_maker import map_maker_agent
 from app.agents.researcher import researcher_agent
 from app.agents.constitutional_compliance import ConstitutionalComplianceAgent
 from app.agents.friendly_neighbor import transform_label
 from app.agents.accessibility_advocate import accessibility_advocate_agent
+from app.agents.policy_analyst import policy_analyst_agent
 
 router = APIRouter()
 compliance_agent = ConstitutionalComplianceAgent()
@@ -76,3 +78,11 @@ async def search_by_pincode(pincode: str = Query(..., pattern=r"^\d{6}$")):
         "helpline": "1950",
         "eci_url": "https://voters.eci.gov.in",
     }
+
+@router.get("/{pc_name}/policy-match")
+async def get_policy_match(pc_name: str, priorities: List[str] = Query([])):
+    """
+    Civic Alignment Engine endpoint.
+    Matches candidate manifestos against user and local priorities.
+    """
+    return await policy_analyst_agent.get_policy_alignment(pc_name, priorities)
