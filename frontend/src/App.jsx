@@ -27,7 +27,7 @@ import './App.css';
 export default function App() {
   const { t } = useLanguage();
   const { isKidsMode } = useKidsMode();
-  const { selected, loading, error, findConstituency, findByPincode, findByDistrict, clearSelection, allConstituencies } = useConstituency();
+  const { selected, loading, error, findConstituency, findByPincode, findByDistrict, findByEpic, clearSelection, allConstituencies } = useConstituency();
   const { trackFeature } = useCivicTracker();
 
   const [activeDrawer, setActiveDrawer] = useState(null);
@@ -94,6 +94,7 @@ export default function App() {
             error={error}
             onPincodeSearch={findByPincode}
             onDistrictSelect={findByDistrict}
+            onEpicSearch={findByEpic}
             constituencies={allConstituencies}
             onDismiss={clearSelection}
           />

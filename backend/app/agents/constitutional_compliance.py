@@ -366,6 +366,8 @@ class ConstitutionalComplianceAgent:
             return self.evaluate_rule({"claims_no_id_needed": True})
         if "aadhaar" in q and ("first" in q or "new voter" in q):
             return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": False, "citizen": True, "age": 18})
+        if "aadhaar" in q and ("epic" in q or "lost" in q or "electoral roll" in q):
+            return self.evaluate_rule({"has_aadhaar": True, "electoral_roll": True, "has_epic": False})
         if "form 12" in q or "postal ballot" in q:
             return self.evaluate_rule({"asks_form_12": True, "is_service_voter": False, "on_election_duty": False})
         if "eci act 104" in q or "article 104" in q or "act 104" in q:

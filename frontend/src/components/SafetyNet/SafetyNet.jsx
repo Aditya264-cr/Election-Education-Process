@@ -11,14 +11,22 @@ const AVAILABLE_STATES = [
   'Karnataka', 'Gujarat', 'West Bengal', 'Rajasthan',
 ];
 
-export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, onDismiss, constituencies = [] }) {
+export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, onEpicSearch, onDismiss, constituencies = [] }) {
   const { lang } = useLanguage();
+  const [epic, setEpic] = useState('');
   const [pincode, setPincode] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [mode, setMode] = useState('message');
+  const [mode, setMode] = useState('epic'); // Default to epic for zero friction
 
   if (!error) return null;
+
+  const handleEpicSubmit = (e) => {
+    e.preventDefault();
+    if (epic.length >= 8) {
+      onEpicSearch(epic);
+    }
+  };
 
   const handlePincodeSubmit = (e) => {
     e.preventDefault();
@@ -62,8 +70,8 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
 
           <div className="p-10">
             <div className="flex items-start gap-6 mb-8">
-              <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
-                <Icon name="ShieldInfo" size={40} />
+              <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl text-4xl">
+                👆
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
@@ -75,35 +83,70 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                 </p>
                 {error.action === 'TRIGGER_SEARCH_BY_EPIC' && (
                   <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 text-amber-800 text-sm">
-                    <Icon name="AlertTriangle" size={18} className="shrink-0" />
+                    <span className="text-xl">🗳️</span>
                     <span>To ensure complete accuracy, we do not estimate locations in complex voting zones. Please use your EPIC number for the official record.</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl mb-8">
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl mb-8 overflow-x-auto">
               <button
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                  mode === 'epic' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
+                onClick={() => setMode('epic')}
+              >
+                <span>🪪</span>
+                EPIC Search
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
                   mode === 'pincode' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
                 onClick={() => setMode('pincode')}
               >
                 <Icon name="MapPin" size={18} />
-                Search by Pincode
+                Pincode
               </button>
               <button
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
                   mode === 'manual' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
                 onClick={() => setMode('manual')}
               >
                 <Icon name="Map" size={18} />
-                Select District
+                District
               </button>
             </div>
 
             <AnimatePresence mode="wait">
+              {mode === 'epic' && (
+                <motion.form
+                  className="space-y-4"
+                  onSubmit={handleEpicSubmit}
+                  key="epic"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Enter your EPIC (Voter ID) Number</label>
+                  <div className="flex gap-4">
+                    <input
+                      className="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-5 py-3 text-xl font-bold tracking-widest focus:border-blue-500 outline-none transition-colors uppercase"
+                      type="text"
+                      placeholder="e.g. ABC1234567"
+                      value={epic}
+                      onChange={(e) => setEpic(e.target.value.toUpperCase())}
+                      autoFocus
+                    />
+                    <Button type="submit" disabled={epic.length < 8} size="lg">
+                      Search 🗳️
+                    </Button>
+                  </div>
+                </motion.form>
+              )}
+
               {mode === 'pincode' && (
                 <motion.form
                   className="space-y-4"
@@ -124,7 +167,6 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                       placeholder="e.g. 411001"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                      autoFocus
                     />
                     <Button type="submit" disabled={pincode.length !== 6} size="lg">
                       Search Area

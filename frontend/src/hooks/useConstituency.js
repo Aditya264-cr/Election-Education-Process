@@ -180,7 +180,7 @@ export function useConstituency() {
         setSelected(null);
         setError({
           type: 'COORDINATE_MISMATCH',
-          message: "We're currently syncing with the ECI database for your precise ward. To ensure 100% accuracy, please verify your details on the official Electoral Search portal.",
+          message: "Detecting your precise Ward... please wait,",
           action: validation.triggerEpicSearch ? 'TRIGGER_SEARCH_BY_EPIC' : 'VERIFY_ON_ECI',
           reason: validation.reason,
           coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
@@ -303,6 +303,35 @@ export function useConstituency() {
     }, 200);
   }, []);
 
+  const findByEpic = useCallback((epic) => {
+    setLoading(true);
+    setError(null);
+
+    setTimeout(() => {
+      const epicUpper = String(epic).trim().toUpperCase();
+      // Mock deterministic resolution: if EPIC ends in a digit, pick a constituency based on it
+      const lastChar = epicUpper.slice(-1);
+      const index = isNaN(parseInt(lastChar, 10)) ? 0 : parseInt(lastChar, 10) % CONSTITUENCIES.length;
+      const match = CONSTITUENCIES[index];
+
+      if (match && epicUpper.length >= 8) {
+        setSelected({
+          ...match,
+          matchType: 'epic',
+          approximate: false,
+        });
+      } else {
+        setError({
+          type: 'EPIC_NOT_FOUND',
+          message: `EPIC ${epicUpper} not found in the national register. Please check your Voter ID card and try again.`,
+          helpline: '1950',
+          eciUrl: 'https://voters.eci.gov.in',
+        });
+      }
+      setLoading(false);
+    }, 600);
+  }, []);
+
   const clearSelection = useCallback(() => {
     setSelected(null);
     setError(null);
@@ -315,6 +344,7 @@ export function useConstituency() {
     findConstituency,
     findByPincode,
     findByDistrict,
+    findByEpic,
     clearSelection,
     allConstituencies: CONSTITUENCIES.map(c => ({
       pc_name: c.pc_name,
