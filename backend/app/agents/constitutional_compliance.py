@@ -15,9 +15,25 @@ SOURCE CATALOG:
  Each verified fact includes a source_id that maps to a real
  government document or ECI circular.
 """
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import urlparse
+
+def sanitize_input(text: str) -> str:
+    """Strip potential prompt injection characters and excessive whitespace."""
+    patterns = [
+        r"ignore previous instructions",
+        r"system prompt",
+        r"you are now a",
+        r"new persona",
+        r"as a model",
+        r"bypass",
+    ]
+    sanitized = text
+    for p in patterns:
+        sanitized = re.sub(p, "[REDACTED]", sanitized, flags=re.IGNORECASE)
+    return re.sub(r"[^\w\s\.\,\?\!\'\-\u0900-\u097F\u0B80-\u0BFF]", "", sanitized).strip()
 
 # ── Source Registry ──
 # Maps every allowed claim to its official legal source.
