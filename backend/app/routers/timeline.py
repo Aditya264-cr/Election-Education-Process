@@ -1,8 +1,17 @@
 """Timeline Router — Election cycle phases (2026 Assembly Elections)."""
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from datetime import date, datetime
+from app.agents.flow_strategist import flow_strategist_agent
 
 router = APIRouter()
+
+@router.get("/flow-prediction")
+async def get_flow_prediction(pc_name: str = Query(..., description="Constituency Name")):
+    """
+    Predictive Polling Navigator — Flow Strategist endpoint.
+    Computes best voting times based on historical peaks and environment.
+    """
+    return await flow_strategist_agent.get_flow_prediction(pc_name)
 
 ELECTION_PHASES = [
     {"key": "registration", "start": "2026-01-15", "end": "2026-03-20"},

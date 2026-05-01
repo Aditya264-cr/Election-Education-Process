@@ -179,7 +179,7 @@ export default function App() {
         onClose={() => setActiveDrawer(null)} 
         title={t('nav_timeline')}
       >
-        <TimelineBar />
+        <TimelineBar pcName={selected?.pc_name} />
       </Drawer>
 
       <Drawer 
