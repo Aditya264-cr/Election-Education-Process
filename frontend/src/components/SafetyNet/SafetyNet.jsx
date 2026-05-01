@@ -123,9 +123,51 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                 <Icon name="Map" size={18} />
                 District
               </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                  mode === 'nri' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
+                onClick={() => setMode('nri')}
+              >
+                <Icon name="Plane" size={18} />
+                NRI / Overseas
+              </button>
             </div>
 
             <AnimatePresence mode="wait">
+              {mode === 'nri' && (
+                <motion.div
+                  className="space-y-4 text-center py-4"
+                  key="nri"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <div className="mx-auto w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <Icon name="Globe2" size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Hello, neighbor from afar!</h3>
+                  <p className="text-slate-600">
+                    As a Non-Resident Indian, you can vote in your home constituency. 
+                    You must register using <strong>Form 6A</strong>.
+                  </p>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-left my-4">
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                      <li>Valid Indian Passport & Foreign Visa required.</li>
+                      <li>File online via NVSP portal or send to your local ERO.</li>
+                      <li>Currently, you must cast your vote in person at your polling booth in India.</li>
+                    </ul>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => window.open('https://voters.eci.gov.in', '_blank')}
+                  >
+                    Go to NVSP Portal <Icon name="ExternalLink" size={18} className="ml-2" />
+                  </Button>
+                </motion.div>
+              )}
+
               {mode === 'epic' && (
                 <motion.form
                   className="space-y-4"

@@ -385,6 +385,21 @@ class ConstitutionalComplianceAgent:
                 },
                 "sources": [self.sources["constitution_art104"]],
             }
+        if "promise" in q or "manifesto" in q or "what will they do" in q:
+            return {
+                "matched": True,
+                "blocked": False,
+                "rule_id": "balanced_manifesto_safeguard",
+                "action": "DISPLAY_BALANCED_MANIFESTOS",
+                "message": "To ensure political neutrality, I am pulling the official manifestos from all major parties in your constituency. Here is what each party has promised regarding your concern.",
+                "document_id": None,
+                "source_metadata": {
+                    "authority": "Election Commission of India — Neutrality Guidelines",
+                    "paragraph": "Voter Information Platforms",
+                    "excerpt": "Platforms must provide balanced, non-partisan access to all major party manifestos.",
+                },
+                "sources": [self.sources["eci_voter_guide"]],
+            }
         return None
     
     def get_all_sources(self) -> list:

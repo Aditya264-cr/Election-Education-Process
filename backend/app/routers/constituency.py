@@ -1,10 +1,12 @@
-"""Constituency Router — Map-Maker Agent endpoint."""
-from fastapi import APIRouter, Query
-from app.agents.map_maker import lookup_constituency, CONSTITUENCY_DATA
+import asyncio
+from fastapi import APIRouter, Query, HTTPException
+from app.agents.map_maker import map_maker_agent
+from app.agents.researcher import researcher_agent
+from app.agents.constitutional_compliance import ConstitutionalComplianceAgent
 from app.agents.friendly_neighbor import transform_label
 
 router = APIRouter()
-
+compliance_agent = ConstitutionalComplianceAgent()
 
 @router.get("/lookup")
 async def get_constituency(
@@ -12,28 +14,51 @@ async def get_constituency(
     lng: float = Query(..., description="Longitude"),
     lang: str = Query("en", description="Language code: en, hi, mr"),
 ):
-    """Look up constituency by coordinates — Map-Maker Agent in action."""
-    result = lookup_constituency(lat, lng)
-    if not result:
-        return {
+    """
+    Look up constituency by coordinates — Proactive Civic Intelligence Engine.
+    Orchestrates multiple agents in parallel for a comprehensive snapshot.
+    """
+    # 1. Resolve geographic identity first
+    base_data = await map_maker_agent["lookup"](lat, lng)
+    if not base_data:
+        raise HTTPException(status_code=404, detail={
             "error": "No constituency found for this location",
-            "fallback": "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking the official records right now. In the meantime, here is the official ECI helpline (1950).",
-            "mode": "trigger_search_by_epic",
-            "eci_url": "https://voters.eci.gov.in",
-        }
+            "fallback": "I want to be 100% sure I'm giving you the right info for your area. I'm double-checking official records.",
+            "mode": "trigger_search_by_epic"
+        })
+
+    pc_name = base_data.pc_name
+
+    # 2. Parallel Agent Execution: Fetch secondary intelligence
+    # Map-Maker (Booth Metrics), Researcher (Local Issues/ROI), Compliance (Legal Nuances)
+    metrics_task = map_maker_agent["metrics"](pc_name)
+    issues_task = researcher_agent.get_local_issues(pc_name)
+    roi_task = researcher_agent.get_infrastructure_roi(pc_name)
+    
+    # We can also add a placeholder for 'legal nuances' or cross-references
+    
+    metrics, local_issues, roi = await asyncio.gather(
+        metrics_task,
+        issues_task,
+        roi_task
+    )
 
     return {
-        "agent": "map_maker",
-        "data": result.model_dump(),
-        "labels": {
-            "pc": transform_label("parliamentary_constituency", lang),
-            "ac": transform_label("assembly_constituency", lang),
-            "turnout": transform_label("voter_turnout", lang),
-            "booth": transform_label("polling_station", lang),
-            "mp": transform_label("member_of_parliament", lang),
-        },
+        "agent": "civic_intelligence_engine",
+        "identity": base_data.model_dump(),
+        "intelligence": {
+            "booth_health": metrics,
+            "local_issues": local_issues,
+            "vote_roi": roi,
+            "labels": {
+                "pc": transform_label("parliamentary_constituency", lang),
+                "ac": transform_label("assembly_constituency", lang),
+                "turnout": transform_label("voter_turnout", lang),
+                "booth": transform_label("polling_station", lang),
+                "mp": transform_label("member_of_parliament", lang),
+            }
+        }
     }
-
 
 @router.get("/search-by-pincode")
 async def search_by_pincode(pincode: str = Query(..., pattern=r"^\d{6}$")):
