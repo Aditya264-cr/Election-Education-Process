@@ -180,7 +180,7 @@ export function useConstituency() {
         setSelected(null);
         setError({
           type: 'COORDINATE_MISMATCH',
-          message: "Detecting your precise Ward... please wait",
+          message: "We're currently syncing with the ECI database for your precise ward. To ensure 100% accuracy, please verify your details on the official Electoral Search portal.",
           action: validation.triggerEpicSearch ? 'TRIGGER_SEARCH_BY_EPIC' : 'VERIFY_ON_ECI',
           reason: validation.reason,
           coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
@@ -199,7 +199,7 @@ export function useConstituency() {
       setSelected(null);
       setError({
         type: 'NO_MATCH',
-        message: "Detecting your precise Ward... please wait",
+        message: "We're confirming your exact voting location. This sometimes takes a moment when syncing with the national register. You can also search by EPIC number for immediate results.",
         action: 'TRIGGER_SEARCH_BY_EPIC',
         coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },
         helpline: '1950',

@@ -1,12 +1,21 @@
 {
   "version": "2026-04-30",
   "storage_backend": "internal-law-library",
-  "provider_order": ["india_code", "indian_kanoon", "prs_legislative_research"],
+  "provider_order": [
+    "india_code",
+    "indian_kanoon",
+    "prs_legislative_research",
+    "eci_official"
+  ],
   "documents": [
     {
       "id": "constitution-article-104",
       "canonical_query": "article 104",
-      "aliases": ["eci act 104", "act 104", "constitutional article 104"],
+      "aliases": [
+        "eci act 104",
+        "act 104",
+        "constitutional article 104"
+      ],
       "title": "Article 104 of the Constitution of India",
       "kind": "constitution_article",
       "section": "104",
@@ -20,20 +29,72 @@
           "status": "cached",
           "url": "https://www.legislative.gov.in/static/uploads/2025/08/cb1b190ea633a1746368ed1fac35fb30.pdf",
           "content_type": "application/pdf",
-          "retrieved_at": "2026-04-30T00:00:00Z"
+          "retrieved_at": "2026-04-30T00:00:00Z",
+          "last_checked_at": "2026-04-30T14:12:28.389201+00:00",
+          "last_status": 200
         },
         {
           "provider": "indian_kanoon",
           "trust_rank": 2,
           "status": "mirror",
           "url": "https://indiankanoon.org/doc/183078052/",
-          "content_type": "text/html"
+          "content_type": "text/html",
+          "last_checked_at": "2026-04-30T14:12:28.389201+00:00",
+          "last_status": 200
+        }
+      ]
+    },
+    {
+      "id": "rpa-1951",
+      "canonical_query": "rpa 1951",
+      "aliases": [
+        "representation of the people act 1951"
+      ],
+      "title": "The Representation of the People Act, 1951",
+      "kind": "statute",
+      "local_path": "statutes/rpa_1951.md",
+      "neighborly_summary": "The main rulebook for how elections are actually run, including rules about candidates and what they can't do.",
+      "source_chain": [
+        {
+          "provider": "india_code",
+          "status": "dead",
+          "url": "https://legislative.gov.in/sites/default/files/A1951-43_0.pdf",
+          "last_checked_at": "2026-04-30T14:12:28.389201+00:00",
+          "last_status": 404,
+          "mirror_url": "https://indiankanoon.org/doc/1131134/",
+          "repair_note": "Promoted trusted mirror from indian_kanoon"
         },
         {
-          "provider": "prs_legislative_research",
-          "trust_rank": 3,
-          "status": "search-fallback",
-          "url": "https://prsindia.org/"
+          "provider": "indian_kanoon",
+          "status": "mirror",
+          "url": "https://indiankanoon.org/doc/1131134/",
+          "content_type": "text/html",
+          "last_checked_at": "2026-04-30T14:12:28.389201+00:00",
+          "last_status": 200
+        }
+      ]
+    },
+    {
+      "id": "eci-instructions-2024",
+      "canonical_query": "eci instructions",
+      "aliases": [
+        "eci manual",
+        "election commission instructions"
+      ],
+      "title": "ECI Instructions on Conduct of Elections (2024)",
+      "kind": "eci_instruction",
+      "section": "1.2",
+      "highlight": "eci-sec-1-2",
+      "local_path": "eci/instructions_2024.md",
+      "neighborly_summary": "Rules ensuring polling stations are accessible and welcoming for everyone, especially those who need a bit of extra help.",
+      "source_chain": [
+        {
+          "provider": "eci_official",
+          "status": "cached",
+          "url": "https://eci.gov.in/files/file/15655-manual-on-conduct-of-elections/",
+          "retrieved_at": "2026-04-30T12:00:00Z",
+          "last_checked_at": "2026-04-30T14:12:28.389201+00:00",
+          "last_status": 0
         }
       ]
     }

@@ -1,27 +1,22 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
 import { ListenButton } from '../../hooks/useTextToSpeech';
-import { getElectionDayType } from '../../data/electionGreetings';
 import './DynamicHome.css';
 
 /**
- * DYNAMIC HOME — CONTEXTUAL MORPHING
- * ====================================
- * Changes the hero section based on DATE and LOCATION:
- *
- * Scenario 1 (April 29 — WB Phase 2):  Live Queue + Booth Directions
- * Scenario 2 (Standard Education Day):  Great Beep + Why Your Vote Matters
- * Scenario 3 (Post-Voting, Pre-May 4):  Waiting Room with quizzes + counting explainer
+ * DYNAMIC HOME — CONTEXTUAL MORPHING (TAILWIND EDITION)
+ * ====================================================
+ * Changes the hero section based on DATE and LOCATION.
+ * Implements 'Immersive Scrolling' triggers for the map.
  */
 
-// ── Date-driven scenario detection ──
 function getScenario() {
   const today = new Date();
   const dateStr = today.toISOString().slice(0, 10);
 
-  // Scenario 1: Polling Days
+  // Scenario 1: Polling Days (Specifically including April 29 for WB Phase)
   if (['2026-04-09', '2026-04-23', '2026-04-29'].includes(dateStr)) {
     return 'POLL_DAY';
   }
@@ -36,324 +31,239 @@ function getScenario() {
     return 'COUNTING_DAY';
   }
 
-  // Scenario 2: Default educational mode
   return 'EDUCATION';
 }
 
-// ── Counting process quiz data ──
 const COUNTING_QUIZ = [
   {
     q: 'How many rounds of counting does a typical constituency have?',
     options: ['5-10', '14-25', '50+', 'Just 1'],
     correct: 1,
-    explanation: 'Each constituency typically has 14-25 rounds. Each round counts votes from a set of EVMs, and results are updated after each round!',
+    explanation: 'Each constituency typically has 14-25 rounds. Each round counts votes from a set of EVMs.',
   },
   {
     q: 'What is a "postal ballot"?',
-    options: ['A digital vote', 'A vote cast by mail from voters who cannot visit the booth', 'A rejected vote', 'A party membership form'],
+    options: ['A digital vote', 'A vote cast by mail for specific groups', 'A rejected vote', 'A party form'],
     correct: 1,
-    explanation: 'Postal ballots are cast by service voters, people on election duty, senior citizens (80+), and people with disabilities.',
-  },
-  {
-    q: 'When are VVPAT slips counted?',
-    options: ['Never', 'Only if there is a complaint', 'After electronic count — 5 random booths per constituency', 'Before electronic count'],
-    correct: 2,
-    explanation: 'After electronic counting, the VVPAT paper slips of 5 randomly selected booths are manually matched with EVM counts for verification.',
+    explanation: 'Postal ballots are for service voters, seniors (80+), and people with disabilities.',
   },
 ];
 
-// ── Animation variants ──
 const containerVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 50 },
   visible: {
     opacity: 1, y: 0,
-    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1], staggerChildren: 0.12 }
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], staggerChildren: 0.1 }
   },
-  exit: {
-    opacity: 0, y: -20,
-    transition: { duration: 0.3 }
-  },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1 },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
 };
 
-export default function DynamicHome({ onNavigate, constituency }) {
+export default function DynamicHome({ onNavigate, constituency, onScrollProgress }) {
   const { t, lang } = useLanguage();
   const { isKidsMode } = useKidsMode();
   const scenario = useMemo(getScenario, []);
+  
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    container: containerRef,
+  });
+
+  // Pass scroll progress to parent to trigger map zoom
+  useEffect(() => {
+    return scrollYProgress.onChange(v => {
+      if (onScrollProgress) onScrollProgress(v);
+    });
+  }, [scrollYProgress, onScrollProgress]);
+
+  const themeClasses = isKidsMode 
+    ? "bg-scout-yellow/95 border-scout-orange/30 shadow-bubble text-slate-900" 
+    : "bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl text-slate-900";
 
   return (
-    <div className="dhome-wrapper" id="dynamic-home">
-      <AnimatePresence mode="wait">
-        {scenario === 'POLL_DAY' && (
-          <PollDayHero key="poll" onNavigate={onNavigate} constituency={constituency} lang={lang} isKids={isKidsMode} />
-        )}
-        {scenario === 'EDUCATION' && (
-          <EducationHero key="edu" onNavigate={onNavigate} lang={lang} isKids={isKidsMode} t={t} />
-        )}
-        {(scenario === 'WAITING_ROOM' || scenario === 'COUNTING_DAY') && (
-          <WaitingRoomHero key="wait" onNavigate={onNavigate} lang={lang} isKids={isKidsMode} isCounting={scenario === 'COUNTING_DAY'} />
-        )}
-      </AnimatePresence>
+    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[800] w-[94%] max-w-xl pointer-events-auto">
+      <motion.div 
+        ref={containerRef}
+        className={`rounded-3xl border p-6 md:p-8 max-h-[60vh] overflow-y-auto scrollbar-hide ${themeClasses}`}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        <AnimatePresence mode="wait">
+          {scenario === 'POLL_DAY' && (
+            <PollDayHero key="poll" onNavigate={onNavigate} constituency={constituency} lang={lang} isKids={isKidsMode} />
+          )}
+          {scenario === 'EDUCATION' && (
+            <EducationHero key="edu" onNavigate={onNavigate} lang={lang} isKids={isKidsMode} t={t} />
+          )}
+          {(scenario === 'WAITING_ROOM' || scenario === 'COUNTING_DAY') && (
+            <WaitingRoomHero key="wait" onNavigate={onNavigate} lang={lang} isKids={isKidsMode} isCounting={scenario === 'COUNTING_DAY'} />
+          )}
+        </AnimatePresence>
+
+        {/* Immersive Scroll Indicator */}
+        <motion.div 
+          className="mt-8 flex flex-col items-center gap-2 opacity-50"
+          animate={{ y: [0, 5, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest">Scroll to dive deeper</span>
+          <div className="w-px h-8 bg-current opacity-20" />
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════
-   SCENARIO 1: POLL DAY HERO
-   Live Queue + Booth Directions
-   ═══════════════════════════════════ */
 function PollDayHero({ onNavigate, constituency, lang, isKids }) {
-  const boothName = constituency?.booth || 'Your Nearest Polling Booth';
   const message = isKids
-    ? '🏰 Today is the day! The Great Beep Castle is open! Let\'s go on a real adventure!'
-    : `🗳️ It's Election Day, neighbor! Head to ${boothName} — let's make your vote count!`;
+    ? '🏰 Adventure Day! The Great Beep Castle is open! Let\'s go!'
+    : `🗳️ It's Election Day, neighbor! Head to your booth — make it count!`;
 
   return (
-    <motion.div className="dhome-card poll-day" variants={containerVariants} initial="hidden" animate="visible" exit="exit">
-      <motion.div className="dhome-badge poll-day-badge" variants={itemVariants}>
-        🔴 LIVE — POLLING DAY
+    <div className="space-y-6">
+      <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
+        <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+        Live — Polling Day
       </motion.div>
 
-      <motion.h2 className="dhome-title" variants={itemVariants}>
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
         {isKids ? '🎪 Adventure Day!' : '🗳️ Your Vote Awaits'}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
-      <motion.p className="dhome-text" variants={itemVariants}>
+      <motion.p className="text-lg opacity-80 leading-relaxed" variants={itemVariants}>
         {message}
       </motion.p>
 
-      <motion.div className="dhome-actions" variants={itemVariants}>
-        <motion.button
-          className="btn-primary dhome-action-btn"
+      <motion.div className="flex flex-col sm:flex-row gap-3" variants={itemVariants}>
+        <button
+          className={`${isKids ? 'bubble-button-primary' : 'bg-neighbor-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate('boothPulse')}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
         >
-          <span className="dhome-action-icon">📡</span>
-          <span>{isKids ? 'Castle Queue' : 'Live Booth Queue'}</span>
-        </motion.button>
+          <span>📡</span>
+          <span>{isKids ? 'Castle Queue' : 'Live Queue Tracker'}</span>
+        </button>
 
-        <motion.button
-          className="btn-secondary dhome-action-btn"
+        <button
+          className={`${isKids ? 'bubble-button-secondary' : 'bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate('map')}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
         >
-          <span className="dhome-action-icon">🗺️</span>
+          <span>🗺️</span>
           <span>{isKids ? 'Find the Castle!' : 'Booth Directions'}</span>
-        </motion.button>
+        </button>
       </motion.div>
-
-      {/* Live status indicator */}
-      <motion.div className="dhome-live-indicator" variants={itemVariants}>
-        <span className="dhome-live-dot" />
-        <span>Booths open 7:00 AM — 6:00 PM</span>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
-/* ═══════════════════════════════════
-   SCENARIO 2: EDUCATION HERO
-   Great Beep + Why Your Vote Matters
-   ═══════════════════════════════════ */
-function EducationHero({ onNavigate, lang, isKids, t }) {
+function EducationHero({ onNavigate, lang, isKids }) {
   const message = isKids
     ? 'Press the button, hear the BEEP, and see your vote get locked away safely!'
-    : 'Understand the EVM, explore your constituency, and discover the real power of your single vote.';
+    : 'Understand the EVM, explore your constituency, and discover the real power of your vote.';
 
   return (
-    <motion.div className="dhome-card education" variants={containerVariants} initial="hidden" animate="visible" exit="exit">
-      <motion.div className="dhome-badge edu-badge" variants={itemVariants}>
-        📚 LEARN & EXPLORE
+    <div className="space-y-6">
+      <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neighbor-primary/10 text-neighbor-primary text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
+        📚 Learn & Explore
       </motion.div>
 
-      <motion.h2 className="dhome-title" variants={itemVariants}>
-        {isKids ? '🎪 The Great Beep Adventure!' : '🏘️ Your Civic Journey Starts Here'}
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
+        {isKids ? '🎪 The Great Beep!' : '🏘️ Your Civic Journey'}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
-      <motion.p className="dhome-text" variants={itemVariants}>
+      <motion.p className="text-lg opacity-80 leading-relaxed" variants={itemVariants}>
         {message}
       </motion.p>
 
-      <motion.div className="dhome-actions" variants={itemVariants}>
-        <motion.button
-          className="btn-primary dhome-action-btn"
-          onClick={() => onNavigate(isKids ? 'greatBeep' : 'evm')}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96, y: 3 }}
+      <motion.div className="flex flex-col sm:flex-row gap-3" variants={itemVariants}>
+        <button
+          className={`${isKids ? 'bubble-button-primary' : 'bg-neighbor-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
+          onClick={() => onNavigate(isKids ? 'evm' : 'evm')}
         >
-          <span className="dhome-action-icon">{isKids ? '🎪' : '🗳️'}</span>
-          <span>{isKids ? 'Play The Great Beep!' : 'Try the EVM Simulator'}</span>
-        </motion.button>
+          <span className="text-xl">{isKids ? '🎪' : '🗳️'}</span>
+          <span>{isKids ? 'The Great Beep!' : 'Try EVM Simulator'}</span>
+        </button>
 
-        <motion.button
-          className="btn-secondary dhome-action-btn"
-          onClick={() => onNavigate(isKids ? 'impact' : 'power')}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
+        <button
+          className={`${isKids ? 'bubble-button-secondary' : 'bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
+          onClick={() => onNavigate('impact')}
         >
-          <span className="dhome-action-icon">{isKids ? '⚡' : '📊'}</span>
-          <span>{isKids ? 'Fun Vote Facts!' : 'Why Your Vote Matters'}</span>
-        </motion.button>
+          <span className="text-xl">{isKids ? '⚡' : '📊'}</span>
+          <span>{isKids ? 'Fun Vote Facts!' : 'Hyper-Local Why'}</span>
+        </button>
       </motion.div>
-
-      {/* Quick stats row */}
-      <motion.div className="dhome-stats-row" variants={itemVariants}>
-        <div className="dhome-stat">
-          <span className="dhome-stat-value">97 Cr</span>
-          <span className="dhome-stat-label">Registered Voters</span>
-        </div>
-        <div className="dhome-stat">
-          <span className="dhome-stat-value">10L+</span>
-          <span className="dhome-stat-label">Polling Booths</span>
-        </div>
-        <div className="dhome-stat">
-          <span className="dhome-stat-value">5</span>
-          <span className="dhome-stat-label">States Voting</span>
-        </div>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
-/* ═══════════════════════════════════
-   SCENARIO 3: WAITING ROOM
-   Quizzes + How Counting Works
-   ═══════════════════════════════════ */
 function WaitingRoomHero({ onNavigate, lang, isKids, isCounting }) {
   const message = isCounting
-    ? 'Counting is underway! Check our live dashboard for round-by-round updates.'
-    : 'While we wait for May 4th, let\'s test your election knowledge!';
+    ? 'Counting is underway! Check live updates now.'
+    : 'While we wait for May 4th, let\'s test your knowledge!';
 
   return (
-    <motion.div className="dhome-card waiting-room" variants={containerVariants} initial="hidden" animate="visible" exit="exit">
-      <motion.div className="dhome-badge wait-badge" variants={itemVariants}>
-        {isCounting ? '🔢 COUNTING DAY' : '⏳ THE WAITING ROOM'}
+    <div className="space-y-6">
+      <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
+        ⏳ The Waiting Room
       </motion.div>
 
-      <motion.h2 className="dhome-title" variants={itemVariants}>
-        {isCounting
-          ? (isKids ? '🔮 The Magic Counting!' : '📊 Counting Day Has Arrived!')
-          : (isKids ? '🎲 Quiz Time!' : '⏳ The Waiting Room')
-        }
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
+        {isCounting ? (isKids ? '🔮 Magic Counting!' : '📊 Counting Day!') : (isKids ? '🎲 Quiz Time!' : '⏳ The Waiting Room')}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
-      <motion.p className="dhome-text" variants={itemVariants}>
-        {message}
-      </motion.p>
-
-      {/* Quiz Cards */}
       {!isCounting && (
-        <motion.div className="dhome-quiz-section" variants={itemVariants}>
-          <h3 className="dhome-quiz-title">
-            {isKids ? '🧠 Brain Challenge!' : '📋 How Well Do You Know Counting Day?'}
-          </h3>
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold opacity-60 uppercase tracking-widest">Civic Quiz</h3>
           {COUNTING_QUIZ.map((q, idx) => (
-            <QuizCard key={idx} quiz={q} index={idx} />
+            <QuizCard key={idx} quiz={q} index={idx} isKids={isKids} />
           ))}
-        </motion.div>
+        </div>
       )}
 
-      {/* Counting Process Animation */}
-      {!isCounting && (
-        <motion.div className="dhome-counting-explainer" variants={itemVariants}>
-          <h3 className="dhome-counting-title">🔢 How Counting Works</h3>
-          <div className="dhome-counting-steps">
-            {[
-              { icon: '📦', text: 'Strong rooms opened at 8 AM under CCTV' },
-              { icon: '🔍', text: 'EVM seals verified by party agents' },
-              { icon: '🔢', text: '14-25 rounds of counting per constituency' },
-              { icon: '🧾', text: 'VVPAT slips of 5 random booths cross-checked' },
-              { icon: '📊', text: 'Results declared constituency by constituency' },
-            ].map((step, i) => (
-              <motion.div
-                key={i}
-                className="dhome-counting-step"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + i * 0.15 }}
-              >
-                <span className="dhome-step-num">{i + 1}</span>
-                <span className="dhome-step-icon">{step.icon}</span>
-                <span className="dhome-step-text">{step.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      <motion.div className="dhome-actions" variants={itemVariants}>
-        {isCounting ? (
-          <motion.button
-            className="btn-primary dhome-action-btn"
-            onClick={() => onNavigate('results')}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <span className="dhome-action-icon">📊</span>
-            <span>Live Results Dashboard</span>
-          </motion.button>
-        ) : (
-          <motion.button
-            className="btn-primary dhome-action-btn"
-            onClick={() => onNavigate('ledger')}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <span className="dhome-action-icon">📒</span>
-            <span>{isKids ? 'Promise Book' : '5-Year Promise Ledger'}</span>
-          </motion.button>
-        )}
+      <motion.div className="mt-6" variants={itemVariants}>
+        <button
+          className={`${isKids ? 'bubble-button-primary w-full' : 'bg-neighbor-primary text-white px-8 py-4 rounded-xl font-bold w-full shadow-lg transition-all active:scale-95'}`}
+          onClick={() => onNavigate('ledger')}
+        >
+          {isKids ? '📖 Read Promise Book' : 'How Counting Works'}
+        </button>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
-/* ═══════════════════════════════════
-   QUIZ CARD — Interactive mini-quiz
-   ═══════════════════════════════════ */
-function QuizCard({ quiz, index }) {
+function QuizCard({ quiz, index, isKids }) {
   const [selected, setSelected] = useState(null);
   const isCorrect = selected === quiz.correct;
 
   return (
     <motion.div
-      className={`dhome-quiz-card glass-card ${selected !== null ? (isCorrect ? 'correct' : 'wrong') : ''}`}
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 + index * 0.15 }}
+      className={`p-4 rounded-2xl border-2 transition-all ${selected !== null ? (isCorrect ? 'border-neighbor-success bg-neighbor-success/5' : 'border-red-200 bg-red-50') : 'border-slate-100 bg-slate-50/50'}`}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.4 + index * 0.1 }}
     >
-      <p className="dhome-quiz-q">{quiz.q}</p>
-      <div className="dhome-quiz-options">
+      <p className="font-bold text-sm mb-3">{quiz.q}</p>
+      <div className="grid grid-cols-2 gap-2">
         {quiz.options.map((opt, i) => (
-          <motion.button
+          <button
             key={i}
-            className={`dhome-quiz-opt ${selected === i ? (i === quiz.correct ? 'correct' : 'wrong') : ''} ${selected !== null && i === quiz.correct ? 'correct' : ''}`}
+            className={`text-[10px] p-2 rounded-lg border transition-all ${selected === i ? (i === quiz.correct ? 'bg-neighbor-success text-white border-neighbor-success' : 'bg-red-500 text-white border-red-500') : 'bg-white border-slate-200 hover:border-neighbor-primary'}`}
             onClick={() => selected === null && setSelected(i)}
             disabled={selected !== null}
-            whileTap={selected === null ? { scale: 0.96 } : {}}
           >
             {opt}
-          </motion.button>
+          </button>
         ))}
       </div>
-      {selected !== null && (
-        <motion.p
-          className="dhome-quiz-explain"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-        >
-          {isCorrect ? '✅ ' : '❌ '}{quiz.explanation}
-        </motion.p>
-      )}
     </motion.div>
   );
 }

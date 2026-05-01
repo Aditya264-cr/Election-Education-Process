@@ -8,27 +8,21 @@ import ShadowBallot from './components/EVM/ShadowBallot';
 import GreatBeep from './components/EVM/GreatBeep';
 import ImpactCalculator from './components/Panels/ImpactCalculator';
 import PowerMeter from './components/Panels/PowerMeter';
-import VillageSquare from './components/Panels/VillageSquare';
-import DocumentViewer from './components/Reader/DocumentViewer';
+import VillageSquare from './components/DesignSystem/Organisms/VillageSquare';
+import DocumentViewer from './components/DesignSystem/Organisms/DocumentViewer';
 import NeighborlyPulse from './components/Panels/NeighborlyPulse';
 import ElectionMorning from './components/PollDay/ElectionMorning';
 import FiveYearLedger from './components/Results/FiveYearLedger';
 import DynamicHome from './components/Home/DynamicHome';
 import SafetyNet from './components/SafetyNet/SafetyNet';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import KidsModeToggle from './components/KidsModeToggle';
+
+import Layout from './components/DesignSystem/Organisms/Layout';
+import Drawer from './components/DesignSystem/Molecules/Drawer';
 import { useLanguage } from './hooks/useLanguage';
 import { useKidsMode } from './hooks/useKidsMode';
 import { useConstituency } from './hooks/useConstituency';
 import { useCivicTracker } from './hooks/useCivicTracker';
 import './App.css';
-
-// ── Nav button animation config ──
-const navBtnMotion = {
-  whileHover: { scale: 1.05, y: -1 },
-  whileTap: { scale: 0.95, y: 2 },
-  transition: { type: 'spring', stiffness: 400, damping: 17 },
-};
 
 export default function App() {
   const { t } = useLanguage();
@@ -36,14 +30,7 @@ export default function App() {
   const { selected, loading, error, findConstituency, findByPincode, findByDistrict, clearSelection, allConstituencies } = useConstituency();
   const { trackFeature } = useCivicTracker();
 
-  const [showEVM, setShowEVM] = useState(false);
-  const [showShadowBallot, setShowShadowBallot] = useState(false);
-  const [showGreatBeep, setShowGreatBeep] = useState(false);
-  const [showImpact, setShowImpact] = useState(false);
-  const [showPowerMeter, setShowPowerMeter] = useState(false);
-  const [showTimeline, setShowTimeline] = useState(false);
-  const [showVillageSquare, setShowVillageSquare] = useState(false);
-  const [showLedger, setShowLedger] = useState(false);
+  const [activeDrawer, setActiveDrawer] = useState(null);
   const [readerDocument, setReaderDocument] = useState(null);
   const [highContrast, setHighContrast] = useState(false);
 
@@ -56,147 +43,52 @@ export default function App() {
     findConstituency(lat, lng, expectedFeatureProps);
   };
 
-  // DynamicHome navigation dispatcher
-  const handleDynamicNav = useCallback((target) => {
-    switch (target) {
-      case 'evm': setShowEVM(true); trackFeature('EVMSimulator'); break;
-      case 'greatBeep': setShowGreatBeep(true); trackFeature('GreatBeep'); break;
-      case 'impact': setShowImpact(true); trackFeature('ImpactCalculator'); break;
-      case 'power': setShowPowerMeter(true); trackFeature('PowerMeter'); break;
-      case 'ledger': setShowLedger(true); trackFeature('FiveYearLedger'); break;
-      case 'map': /* already on map */ break;
-      default: break;
-    }
-  }, [trackFeature]);
+  const navItems = [
+    { id: 'timeline', label: t('nav_timeline'), icon: 'Calendar', active: activeDrawer === 'timeline' },
+    { id: 'evm', label: isKidsMode ? 'The Great Beep!' : t('nav_evm'), icon: 'Vote', active: activeDrawer === 'evm' },
+    { id: 'impact', label: isKidsMode ? 'Fun Facts!' : t('nav_impact'), icon: isKidsMode ? 'Zap' : 'BarChart3', active: activeDrawer === 'impact' },
+    { id: 'village', label: isKidsMode ? 'Ask Anything!' : 'Village Square', icon: 'MessagesSquare', active: activeDrawer === 'village' },
+    { id: 'ledger', label: isKidsMode ? 'Promise Book' : 'Promise Ledger', icon: 'BookText', active: activeDrawer === 'ledger' },
+  ];
+
+  const handleNavClick = (id) => {
+    setActiveDrawer(prev => prev === id ? null : id);
+    trackFeature(id);
+  };
 
   return (
-    <div className="app-layout">
-      {/* ── Election Morning Greeting (date-triggered) ── */}
+    <Layout 
+      navItems={navItems} 
+      onNavItemClick={handleNavClick}
+      highContrast={highContrast}
+      onContrastToggle={() => setHighContrast(!highContrast)}
+    >
       <ElectionMorning userState={selected?.state || ''} />
 
-      {/* ── Top Navigation Bar ── */}
-      <header className="app-header glass-panel">
-        <div className="header-left">
-          <div className="app-logo">
-            <motion.span
-              className="logo-icon"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {isKidsMode ? '🏰' : '🏘️'}
-            </motion.span>
-            <div className="logo-text">
-              <h1 className="logo-title">{t('app_title')}</h1>
-              <p className="logo-subtitle">{t('app_subtitle')}</p>
-            </div>
-          </div>
-        </div>
-
-        <nav className="header-nav" role="navigation" aria-label="Main navigation">
-          <motion.button
-            className={`nav-btn ${showTimeline ? 'active' : ''}`}
-            onClick={() => { setShowTimeline(!showTimeline); trackFeature('Timeline'); }}
-            {...navBtnMotion}
-            aria-label={t('nav_timeline')}
-          >
-            <span className="nav-icon" aria-hidden="true">📅</span>
-            <span className="nav-label">{t('nav_timeline')}</span>
-          </motion.button>
-
-          <motion.button
-            className="nav-btn"
-            onClick={() => {
-              if (isKidsMode) { setShowGreatBeep(true); trackFeature('GreatBeep'); }
-              else { setShowEVM(true); trackFeature('EVMSimulator'); }
-            }}
-            {...navBtnMotion}
-            aria-label={isKidsMode ? 'The Great Beep!' : t('nav_evm')}
-          >
-            <span className="nav-icon" aria-hidden="true">{isKidsMode ? '🎪' : '🗳️'}</span>
-            <span className="nav-label">{isKidsMode ? 'The Great Beep!' : t('nav_evm')}</span>
-          </motion.button>
-
-          {isKidsMode && (
-            <motion.button
-              className="nav-btn"
-              onClick={() => { setShowShadowBallot(true); trackFeature('ShadowBallot'); }}
-              {...navBtnMotion}
-              aria-label={t('kids_shadow_title')}
-            >
-              <span className="nav-icon" aria-hidden="true">🎭</span>
-              <span className="nav-label">{t('kids_shadow_title')}</span>
-            </motion.button>
-          )}
-
-          <motion.button
-            className="nav-btn"
-            onClick={() => {
-              if (isKidsMode) { setShowImpact(true); trackFeature('ImpactCalculator'); }
-              else { setShowPowerMeter(true); trackFeature('PowerMeter'); }
-            }}
-            disabled={!selected && !isKidsMode}
-            {...navBtnMotion}
-            aria-label={isKidsMode ? 'Fun Facts!' : t('nav_impact')}
-          >
-            <span className="nav-icon" aria-hidden="true">{isKidsMode ? '⚡' : '📊'}</span>
-            <span className="nav-label">{isKidsMode ? 'Fun Facts!' : t('nav_impact')}</span>
-          </motion.button>
-
-          <motion.button
-            className="nav-btn"
-            onClick={() => { setShowVillageSquare(true); trackFeature('VillageSquare'); }}
-            {...navBtnMotion}
-            aria-label={isKidsMode ? 'Ask Anything!' : 'Village Square'}
-          >
-            <span className="nav-icon" aria-hidden="true">🏘️</span>
-            <span className="nav-label">{isKidsMode ? 'Ask Anything!' : 'Village Square'}</span>
-          </motion.button>
-
-          <motion.button
-            className="nav-btn"
-            onClick={() => { setShowLedger(true); trackFeature('FiveYearLedger'); }}
-            {...navBtnMotion}
-            aria-label={isKidsMode ? 'Promise Book' : 'Promise Ledger'}
-          >
-            <span className="nav-icon" aria-hidden="true">📒</span>
-            <span className="nav-label">{isKidsMode ? 'Promise Book' : 'Promise Ledger'}</span>
-          </motion.button>
-        </nav>
-
-        <div className="header-right">
-          <button
-            className={`contrast-toggle ${highContrast ? 'active' : ''}`}
-            onClick={() => setHighContrast((prev) => !prev)}
-            aria-label={highContrast ? 'Disable high contrast mode' : 'Enable high contrast mode'}
-          >
-            {highContrast ? '◐ Contrast' : '◑ Contrast'}
-          </button>
-          <KidsModeToggle />
-          <LanguageSwitcher />
-        </div>
-      </header>
-
-      {/* ── Map Area ── */}
-      <main className="app-map-area" role="main">
+      <main className="h-full w-full relative">
         <IndiaMap
           onLocationSelect={handleLocationSelect}
           selectedConstituency={selected}
         />
 
-        {/* Neighbor Info Panel (Adult mode only) */}
         {selected && !isKidsMode && (
           <NeighborPanel constituency={selected} onClose={clearSelection} />
         )}
 
-        {/* Dynamic Home — Contextual Hero */}
         {!selected && !error && (
           <DynamicHome
-            onNavigate={handleDynamicNav}
+            onNavigate={(target) => handleNavClick(target)}
             constituency={selected}
+            onScrollProgress={(progress) => {
+              // Trigger map zoom if user scrolls down significantly
+              if (progress > 0.4 && progress < 0.8) {
+                // We'll handle this in IndiaMap via a new prop
+                window.dispatchEvent(new CustomEvent('map-immersive-zoom', { detail: { progress } }));
+              }
+            }}
           />
         )}
 
-        {/* Safety Net — Graceful Degradation */}
         {error && (
           <SafetyNet
             error={error}
@@ -207,68 +99,84 @@ export default function App() {
           />
         )}
 
-        {/* Approximate location badge */}
         {selected?.approximate && (
-          <div className="approx-badge" role="status">
-            📍 Approximate location — results may vary. <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer">Verify on ECI</a>
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-full text-sm text-amber-800 shadow-lg z-40">
+            📍 Approximate location — results may vary. <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold">Verify on ECI</a>
           </div>
         )}
 
-        {/* Loading overlay */}
         {loading && (
-          <div className="map-loading" role="status" aria-live="polite">
-            <div className="map-loading-spinner" />
-            <span>{t('map_locating')}</span>
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 text-white">
+            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+            <span className="font-bold tracking-wide">{t('map_locating')}</span>
           </div>
         )}
       </main>
 
-      {/* ── Timeline Drawer ── */}
-      {showTimeline && (
-        <motion.div
-          className="timeline-drawer"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 40 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        >
-          <TimelineBar />
-          <button className="timeline-dismiss" onClick={() => setShowTimeline(false)} aria-label="Close timeline">✕</button>
-        </motion.div>
-      )}
+      {/* ── Predictive Navigation Drawers ── */}
+      <Drawer 
+        isOpen={activeDrawer === 'timeline'} 
+        onClose={() => setActiveDrawer(null)} 
+        title={t('nav_timeline')}
+      >
+        <TimelineBar />
+      </Drawer>
 
-      {/* ── Modals ── */}
-      {showEVM && <EVMSimulator onClose={() => setShowEVM(false)} />}
-      {showShadowBallot && <ShadowBallot onClose={() => setShowShadowBallot(false)} />}
-      {showGreatBeep && <GreatBeep onClose={() => setShowGreatBeep(false)} />}
-      {showImpact && selected && (
-        <ImpactCalculator constituency={selected} onClose={() => setShowImpact(false)} />
-      )}
-      {showPowerMeter && (
-        <PowerMeter constituency={selected} onClose={() => setShowPowerMeter(false)} />
-      )}
-      {showVillageSquare && (
+      <Drawer 
+        isOpen={activeDrawer === 'evm'} 
+        onClose={() => setActiveDrawer(null)} 
+        title={isKidsMode ? 'The Great Beep!' : t('nav_evm')}
+      >
+        {isKidsMode ? <GreatBeep onClose={() => setActiveDrawer(null)} /> : <EVMSimulator onClose={() => setActiveDrawer(null)} />}
+      </Drawer>
+
+      <Drawer 
+        isOpen={activeDrawer === 'impact'} 
+        onClose={() => setActiveDrawer(null)} 
+        title={isKidsMode ? 'Fun Facts!' : t('nav_impact')}
+      >
+        {isKidsMode ? (
+          <ImpactCalculator constituency={selected} onClose={() => setActiveDrawer(null)} />
+        ) : (
+          <PowerMeter constituency={selected} onClose={() => setActiveDrawer(null)} />
+        )}
+      </Drawer>
+
+      <Drawer 
+        isOpen={activeDrawer === 'village'} 
+        onClose={() => setActiveDrawer(null)} 
+        title={isKidsMode ? 'Ask Anything!' : 'Village Square'}
+      >
         <VillageSquare
-          onClose={() => setShowVillageSquare(false)}
+          onClose={() => setActiveDrawer(null)}
           onOpenDocument={(doc) => setReaderDocument(doc)}
         />
-      )}
-      {readerDocument && (
-        <DocumentViewer
-          documentId={readerDocument.documentId}
-          query={readerDocument.query}
-          onClose={() => setReaderDocument(null)}
-        />
-      )}
-      {showLedger && <FiveYearLedger onClose={() => setShowLedger(false)} />}
+      </Drawer>
 
-      {/* ── Misinformation Firewall Footer ── */}
+      <Drawer 
+        isOpen={activeDrawer === 'ledger'} 
+        onClose={() => setActiveDrawer(null)} 
+        title={isKidsMode ? 'Promise Book' : 'Promise Ledger'}
+      >
+        <FiveYearLedger onClose={() => setActiveDrawer(null)} />
+      </Drawer>
+
+      {/* Document Reader - also a Drawer for consistency */}
+      <Drawer
+        isOpen={!!readerDocument}
+        onClose={() => setReaderDocument(null)}
+        title={readerDocument?.title || 'Legal Document'}
+      >
+        {readerDocument && (
+          <DocumentViewer
+            documentId={readerDocument.documentId}
+            query={readerDocument.query}
+            onClose={() => setReaderDocument(null)}
+          />
+        )}
+      </Drawer>
+
       <NeighborlyPulse />
-
-      {/* ── Disclaimer Footer ── */}
-      <div className="app-disclaimer" role="contentinfo">
-        <span>ℹ️ {t('disclaimer')}</span>
-      </div>
-    </div>
+    </Layout>
   );
 }

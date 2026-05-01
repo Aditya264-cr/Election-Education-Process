@@ -68,25 +68,26 @@ const rowVariants = {
 const blueButtonVariants = {
   idle: {
     scale: 1, y: 0,
-    boxShadow: '0 4px 12px rgba(59,130,246,0.3), 0 6px 0 #1E40AF',
+    boxShadow: '0 6px 0 #1E40AF, 0 8px 15px rgba(0,0,0,0.2)',
   },
   hover: {
-    scale: 1.08, y: -2,
-    boxShadow: '0 8px 20px rgba(59,130,246,0.5), 0 8px 0 #1E40AF',
-    transition: { type: 'spring', stiffness: 400, damping: 15 },
+    scale: 1.02, y: -2,
+    boxShadow: '0 8px 0 #1E40AF, 0 12px 20px rgba(0,0,0,0.2)',
+    transition: { type: 'spring', stiffness: 400, damping: 10 },
   },
   pressed: {
-    scale: 0.92, y: 4,
-    boxShadow: '0 1px 4px rgba(59,130,246,0.3), 0 2px 0 #1E40AF',
+    scale: 0.95, y: 6,
+    boxShadow: '0 0px 0 #1E40AF, 0 2px 4px rgba(0,0,0,0.1)',
     transition: { type: 'spring', stiffness: 600, damping: 20 },
   },
 };
 
-// Haptic-like machine shake on vote
+// Haptic-like machine shake on vote (more intense)
 const machineShakeVariants = {
-  idle: { x: 0 },
+  idle: { x: 0, rotate: 0 },
   shake: {
-    x: [0, -4, 4, -3, 3, -1, 1, 0],
+    x: [0, -8, 8, -6, 6, -3, 3, 0],
+    rotate: [0, -1, 1, -0.5, 0.5, 0],
     transition: { duration: 0.4, ease: 'easeInOut' },
   },
 };

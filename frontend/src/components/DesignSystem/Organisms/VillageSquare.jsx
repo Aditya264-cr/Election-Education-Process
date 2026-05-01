@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useKidsMode } from '../../hooks/useKidsMode';
+import { useLanguage } from '../../../hooks/useLanguage';
+import { useKidsMode } from '../../../hooks/useKidsMode';
+import Icon from '../Atoms/Icon';
+import Button from '../Atoms/Button';
 import './VillageSquare.css';
 
 function isTraceableOfficialSource(url, sourceLabel) {
@@ -91,9 +93,10 @@ const COMMUNITY_QA = [
     question: "Is my vote really secret? Can anyone find out who I voted for?",
     answer: "Absolutely secret! The EVM records votes in sequence, but there is NO way to link a specific vote to a voter. The ballot is completely anonymous. Even during VVPAT verification, only the paper slip is checked — never linked to a person.",
     eciSource: "Section 128 of the Representation of People Act, 1951",
-    eciUrl: "https://eci.gov.in/files/file/14041-secrecy-of-vote/",
+    eciUrl: "internal://law-library/rpa-1951",
+    documentId: "rpa-1951",
     category: "voting",
-    icon: "🔐",
+    icon: "Lock",
   },
   {
     id: 2,
@@ -102,7 +105,7 @@ const COMMUNITY_QA = [
     eciSource: "ECI Strong Room Security Protocol (2024 Revision)",
     eciUrl: "https://eci.gov.in/files/file/14039-strong-room-protocol/",
     category: "security",
-    icon: "🏛️",
+    icon: "ShieldCheck",
   },
   {
     id: 3,
@@ -111,7 +114,7 @@ const COMMUNITY_QA = [
     eciSource: "Technical Expert Committee Report on EVMs (ECI)",
     eciUrl: "https://eci.gov.in/files/file/14036-evm-vvpat-awareness/",
     category: "technology",
-    icon: "💻",
+    icon: "Cpu",
   },
   {
     id: 4,
@@ -120,7 +123,7 @@ const COMMUNITY_QA = [
     eciSource: "Rule 49MA of Conduct of Election Rules, 1961",
     eciUrl: "https://eci.gov.in/files/file/14042-voting-procedure/",
     category: "voting",
-    icon: "❓",
+    icon: "HelpCircle",
   },
   {
     id: 5,
@@ -129,7 +132,7 @@ const COMMUNITY_QA = [
     eciSource: "ECI History of Electoral Reforms",
     eciUrl: "https://eci.gov.in/files/file/14043-electoral-reforms/",
     category: "history",
-    icon: "📜",
+    icon: "History",
   },
   {
     id: 6,
@@ -138,7 +141,7 @@ const COMMUNITY_QA = [
     eciSource: "ECI First Level Checking Protocol",
     eciUrl: "https://eci.gov.in/files/file/14038-mock-poll-protocol/",
     category: "process",
-    icon: "🔬",
+    icon: "TestTube2",
   },
 ];
 
@@ -168,7 +171,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
       documentId: legalOverride.documentId,
       sourceMetadata: legalOverride.sourceMetadata,
       category: "legal_override",
-      icon: "⚖️",
+      icon: "Scale",
       isUserGenerated: true,
     } : {
       id: Date.now(),
@@ -177,7 +180,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
       eciSource: "Election Commission of India — Helpline & Resources",
       eciUrl: "https://voters.eci.gov.in",
       category: "community",
-      icon: "🏘️",
+      icon: "Users",
       isUserGenerated: true,
     };
 
@@ -195,15 +198,19 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
 
   return (
     <div className="vs-overlay" id="village-square">
-      <div className="vs-container glass-panel animate-fadeInScale">
-        <button className="vs-close" onClick={onClose} aria-label="Close">✕</button>
+      <div className="vs-container glass-panel">
+        <button className="vs-close" onClick={onClose} aria-label="Close">
+          <Icon name="X" />
+        </button>
 
         {/* Header */}
         <div className="vs-header">
-          <div className="vs-header-icon">{isKidsMode ? '🏰' : '🏘️'}</div>
+          <div className="vs-header-icon">
+            <Icon name={isKidsMode ? 'Castle' : 'Users'} size={32} />
+          </div>
           <div>
             <h2 className="vs-title">
-              {isKidsMode ? '🗺️ The Village Square' : 'The Village Square'}
+              {isKidsMode ? 'The Village Square' : 'The Village Square'}
             </h2>
             <p className="vs-subtitle">
               Community Q&A — Ask anything, get neighbor-verified answers
@@ -213,7 +220,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
 
         {/* The Neighbor's Guarantee Badge */}
         <div className="vs-guarantee">
-          <span className="vs-guarantee-icon">🤝</span>
+          <Icon name="Handshake" size={20} className="text-blue-600" />
           <span className="vs-guarantee-text">
             <strong>The Neighbor's Guarantee:</strong> Every answer includes a link to the official 
             Election Commission source document.
@@ -235,13 +242,14 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
               onKeyDown={(e) => e.key === 'Enter' && handleAsk()}
               id="village-square-input"
             />
-            <button
+            <Button
               className="vs-ask-btn"
               onClick={handleAsk}
               disabled={!userQuestion.trim() || isAsking}
             >
-              {isAsking ? '💭' : '📨'} {isAsking ? 'Thinking...' : 'Ask'}
-            </button>
+              <Icon name={isAsking ? 'Loader2' : 'Send'} className={isAsking ? 'animate-spin' : ''} />
+              {isAsking ? 'Thinking...' : 'Ask'}
+            </Button>
           </div>
         </div>
 
@@ -256,21 +264,24 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
             <div
               key={qa.id}
               className={`vs-qa-card ${expandedId === qa.id ? 'expanded' : ''} ${qa.isUserGenerated ? 'user-generated' : ''}`}
-              style={{ animationDelay: `${idx * 0.06}s` }}
             >
               {/* Question */}
               <div className="vs-qa-question" onClick={() => toggleExpand(qa.id)}>
-                <span className="vs-qa-icon">{qa.icon}</span>
+                <div className="vs-qa-icon-wrap">
+                  <Icon name={qa.icon} size={20} />
+                </div>
                 <span className="vs-qa-q-text">{qa.question}</span>
-                <span className={`vs-qa-arrow ${expandedId === qa.id ? 'open' : ''}`}>▸</span>
+                <Icon name="ChevronDown" className={`vs-qa-arrow ${expandedId === qa.id ? 'open' : ''}`} />
               </div>
 
               {/* Answer (expanded) */}
               {expandedId === qa.id && (
-                <div className="vs-qa-answer animate-fadeInUp">
+                <div className="vs-qa-answer">
                   {/* Neighbor avatar */}
                   <div className="vs-qa-neighbor">
-                    <div className="vs-qa-neighbor-avatar">🏘️</div>
+                    <div className="vs-qa-neighbor-avatar">
+                      <Icon name="UserCircle2" size={24} />
+                    </div>
                     <span className="vs-qa-neighbor-name">Friendly Neighbor says:</span>
                   </div>
 
@@ -280,7 +291,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
                   {/* ECI Source — The Guarantee */}
                   <div className="vs-qa-source">
                     <div className="vs-qa-source-badge">
-                      <span className="vs-qa-source-check">✅</span>
+                      <Icon name="CheckCircle2" size={14} className="text-emerald-500" />
                       <span>STAMP OF AUTHORITY</span>
                     </div>
                     {qa.sourceMetadata && (
@@ -296,9 +307,11 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
                       onClick={() => onOpenDocument?.({
                         documentId: qa.documentId,
                         query: qa.question || qa.eciSource,
+                        title: qa.eciSource,
                       })}
                     >
-                      📄 {qa.documentId ? qa.eciSource : `${qa.eciSource} (ingestion pending)`}
+                      <Icon name="FileText" size={16} />
+                      {qa.documentId ? qa.eciSource : `${qa.eciSource} (ingestion pending)`}
                     </button>
                     {!complianceOk && (
                       <span className="vs-qa-source-warning">Source could not be traced to an official statute/PDF. Output blocked.</span>
@@ -313,9 +326,9 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
 
         {/* Footer disclaimer */}
         <div className="vs-footer">
-          <span className="vs-footer-text">
-            ℹ️ All answers verified against official Election Commission of India documentation.
-            For time-sensitive queries, call ECI Helpline: <strong>1950</strong>.
+          <span className="vs-footer-text text-xs text-slate-500 italic">
+            All answers verified against official Election Commission of India documentation.
+            For time-sensitive queries, call ECI Helpline: 1950.
           </span>
         </div>
       </div>
