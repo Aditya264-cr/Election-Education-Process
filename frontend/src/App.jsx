@@ -24,6 +24,7 @@ import { useLanguage } from './hooks/useLanguage';
 import { useKidsMode } from './hooks/useKidsMode';
 import { useConstituency } from './hooks/useConstituency';
 import { useCivicTracker } from './hooks/useCivicTracker';
+import LiveNerveCenter from './components/Results/LiveNerveCenter';
 import rumorFirewall from './data/rumor-firewall.json';
 import './App.css';
 
@@ -36,6 +37,7 @@ export default function App() {
   const [activeDrawer, setActiveDrawer] = useState(null);
   const [readerDocument, setReaderDocument] = useState(null);
   const [highContrast, setHighContrast] = useState(false);
+  const [showLiveNerveCenter, setShowLiveNerveCenter] = useState(false);
   
   // Misinformation Firewall state
   const [activeRumor, setActiveRumor] = useState(null);
@@ -52,6 +54,14 @@ export default function App() {
        setActiveRumor(rumor);
     } else {
        setActiveRumor(null);
+    }
+    
+    // Simulate counting day trigger (May 4th)
+    const today = new Date().toISOString().slice(0, 10);
+    if (selected && today === '2026-05-04') {
+      setShowLiveNerveCenter(true);
+    } else {
+      setShowLiveNerveCenter(false);
     }
   }, [selected]);
 
@@ -247,6 +257,24 @@ export default function App() {
           />
         )}
       </Drawer>
+
+      {/* Live Nerve Center Overlay for Counting Day */}
+      <AnimatePresence>
+        {showLiveNerveCenter && selected && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute top-24 right-8 z-[2500] w-96"
+          >
+            <LiveNerveCenter 
+              pcName={selected.pc_name} 
+              stateName={selected.state} 
+              onClose={() => setShowLiveNerveCenter(false)} 
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <NeighborlyPulse />
     </Layout>
