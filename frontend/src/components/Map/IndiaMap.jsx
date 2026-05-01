@@ -118,13 +118,15 @@ function MapClickHandler({ onMapClick }) {
 }
 
 // Cinematic immersive zoom: zooms out first, then smooth fly-in to constituency
-function FlyToLocation({ position }) {
+function FlyToLocation({ position, immersive }) {
   const map = useMap();
   useEffect(() => {
-    if (position) {
+    if (immersive && position) {
+      map.flyTo(position, 14, { duration: 3, easeLinearity: 0.1 });
+    } else if (position) {
       const currentZoom = map.getZoom();
       // Phase 1: Quick zoom out for dramatic effect
-      if (currentZoom > 7) {
+      if (currentZoom > 7 && !immersive) {
         map.flyTo(map.getCenter(), 6, { duration: 0.8 });
         // Phase 2: Cinematic fly to target
         setTimeout(() => {
@@ -135,7 +137,7 @@ function FlyToLocation({ position }) {
         map.flyTo(position, 12, { duration: 2.5, easeLinearity: 0.15 });
       }
     }
-  }, [position, map]);
+  }, [position, immersive, map]);
   return null;
 }
 
@@ -146,8 +148,22 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const [clickedPos, setClickedPos] = useState(null);
   const [flyTarget, setFlyTarget] = useState(null);
   const [treasureFound, setTreasureFound] = useState(new Set());
+  const [immersiveZoom, setImmersiveZoom] = useState(false);
 
-  // Find nearest polling booth to user's position
+  // Listen for immersive zoom event
+  useEffect(() => {
+    const handleImmersiveZoom = (e) => {
+      if (e.detail.progress > 0.5) {
+        setImmersiveZoom(true);
+      } else {
+        setImmersiveZoom(false);
+      }
+    };
+    window.addEventListener('map-immersive-zoom', handleImmersiveZoom);
+    return () => window.removeEventListener('map-immersive-zoom', handleImmersiveZoom);
+  }, []);
+
+  // Nearest booth calculation...
   const nearestBooth = useMemo(() => {
     if (!userPos) return null;
     let nearest = null;
@@ -258,7 +274,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
         />
 
         <MapClickHandler onMapClick={handleMapClick} />
-        {flyTarget && <FlyToLocation position={flyTarget} />}
+        {flyTarget && <FlyToLocation position={flyTarget} immersive={immersiveZoom} />}
 
         {/* User location marker */}
         {userPos && (

@@ -191,18 +191,19 @@
 
 /* Blue Button — 3D Tactile */
 .evm-blue-btn {
-  width: var(--touch-min);
-  height: 32px;
-  border-radius: 6px;
+  width: 64px;
+  height: 48px;
+  border-radius: 8px;
   background: linear-gradient(180deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%);
   border: 2px solid #60A5FA;
-  border-bottom: 3px solid #1E40AF;
+  border-bottom: 6px solid #1E40AF;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  transition: all 0.1s;
 }
 
 .evm-blue-btn:hover:not(:disabled) {

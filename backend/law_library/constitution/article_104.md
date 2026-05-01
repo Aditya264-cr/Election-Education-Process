@@ -15,4 +15,4 @@ retrieved_at: 2026-04-30T00:00:00Z
 
 ## Neighborly Summary
 
-This basically says that if someone isn't qualified to be there, they can't just sit in Parliament. There's a fine for every day they do.
+This basically says that if someone isn't qualified to be there, they can't just sit in Parliament—there's a fine for every day they do!

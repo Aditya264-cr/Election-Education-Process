@@ -38,9 +38,10 @@ VERIFIED_SOURCES = {
     },
     "rpa_1951": {
         "title": "The Representation of the People Act, 1951",
-        "url": "https://legislative.gov.in/sites/default/files/A1951-43_0.pdf",
-        "type": "statute",
+        "url": "internal://law-library/rpa-1951",
+        "type": "internal_law_library",
         "issuer": "Parliament of India",
+        "library_id": "rpa-1951",
     },
     "constitution_art324": {
         "title": "Article 324 — Superintendence, direction, and control of elections",
