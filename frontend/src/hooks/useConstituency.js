@@ -180,7 +180,7 @@ export function useConstituency() {
         setSelected(null);
         setError({
           type: 'COORDINATE_MISMATCH',
-          message: "Detecting your precise Ward... please wait,",
+          message: "We're currently syncing with the ECI database to find your precise ward. Please try again in a moment.",
           action: validation.triggerEpicSearch ? 'TRIGGER_SEARCH_BY_EPIC' : 'VERIFY_ON_ECI',
           reason: validation.reason,
           coordinates: { lat: lat.toFixed(4), lng: lng.toFixed(4) },

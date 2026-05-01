@@ -234,7 +234,7 @@ export default function VillageSquare({ onClose, onOpenDocument }) {
               type="text"
               className="vs-ask-input"
               placeholder={isKidsMode 
-                ? "What do you want to know, Explorer? 🧭" 
+                ? "What do you want to know, Explorer?" 
                 : "Ask your question to the neighborhood..."
               }
               value={userQuestion}

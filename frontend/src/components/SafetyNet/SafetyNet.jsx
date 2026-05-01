@@ -46,6 +46,11 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
     .map((c) => c.district)
     .filter((d, idx, arr) => d && arr.indexOf(d) === idx);
 
+  // Human-centric error message
+  const humanMessage = error.message.includes('Detecting') 
+    ? "We're currently syncing with the ECI database to find your precise ward. Please try again in a moment."
+    : error.message;
+
   return (
     <AnimatePresence>
       <motion.div
@@ -70,20 +75,20 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
 
           <div className="p-10">
             <div className="flex items-start gap-6 mb-8">
-              <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl text-4xl">
-                👆
+              <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
+                <Icon name="LocateFixed" size={40} />
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
                   Verifying Your Location
-                  <ListenButton text={error.message} lang={lang} label="Listen to message" />
+                  <ListenButton text={humanMessage} lang={lang} label="Listen to message" />
                 </h2>
                 <p className="text-slate-600 leading-relaxed text-lg">
-                  {error.message}
+                  {humanMessage}
                 </p>
                 {error.action === 'TRIGGER_SEARCH_BY_EPIC' && (
                   <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 text-amber-800 text-sm">
-                    <span className="text-xl">🗳️</span>
+                    <Icon name="ShieldAlert" size={18} className="shrink-0" />
                     <span>To ensure complete accuracy, we do not estimate locations in complex voting zones. Please use your EPIC number for the official record.</span>
                   </div>
                 )}
@@ -97,7 +102,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                 }`}
                 onClick={() => setMode('epic')}
               >
-                <span>🪪</span>
+                <Icon name="UserCheck" size={18} />
                 EPIC Search
               </button>
               <button
@@ -141,7 +146,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
                       autoFocus
                     />
                     <Button type="submit" disabled={epic.length < 8} size="lg">
-                      Search 🗳️
+                      Search <Icon name="Search" size={18} className="ml-2" />
                     </Button>
                   </div>
                 </motion.form>
@@ -225,7 +230,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
 
           <div className="bg-slate-50 p-8 flex items-center justify-between border-t border-slate-100">
             <div className="flex items-center gap-4 text-slate-600">
-              <Icon name="Phone" size={24} className="text-blue-600" />
+              <Icon name="PhoneCall" size={24} className="text-blue-600" />
               <div>
                 <p className="text-sm font-bold text-slate-900">Official ECI Helpline: 1950</p>
                 <p className="text-xs">24/7 voter assistance</p>
@@ -238,7 +243,7 @@ export default function SafetyNet({ error, onPincodeSearch, onDistrictSelect, on
               className="flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 transition-colors"
             >
               Electoral Search Portal
-              <Icon name="ArrowRight" size={18} />
+              <Icon name="ExternalLink" size={18} />
             </a>
           </div>
 

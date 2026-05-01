@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
 import { ListenButton } from '../../hooks/useTextToSpeech';
+import Icon from '../DesignSystem/Atoms/Icon';
 import './DynamicHome.css';
 
 /**
@@ -81,14 +82,14 @@ export default function DynamicHome({ onNavigate, constituency, onScrollProgress
   }, [scrollYProgress, onScrollProgress]);
 
   const themeClasses = isKidsMode 
-    ? "bg-scout-yellow/95 border-scout-orange/30 shadow-bubble text-slate-900" 
-    : "bg-white/90 backdrop-blur-xl border-slate-200 shadow-xl text-slate-900";
+    ? "bg-amber-100/95 border-orange-200 shadow-bubble text-slate-900" 
+    : "glass-panel p-6 md:p-8 max-h-[60vh] overflow-y-auto scrollbar-hide text-slate-900";
 
   return (
     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[800] w-[94%] max-w-xl pointer-events-auto">
       <motion.div 
         ref={containerRef}
-        className={`rounded-3xl border p-6 md:p-8 max-h-[60vh] overflow-y-auto scrollbar-hide ${themeClasses}`}
+        className={`rounded-3xl border ${themeClasses}`}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -122,8 +123,8 @@ export default function DynamicHome({ onNavigate, constituency, onScrollProgress
 
 function PollDayHero({ onNavigate, constituency, lang, isKids }) {
   const message = isKids
-    ? '🏰 Adventure Day! The Great Beep Castle is open! Let\'s go!'
-    : `🗳️ It's Election Day, neighbor! Head to your booth — make it count!`;
+    ? 'Adventure Day! The Great Beep Castle is open! Let\'s go!'
+    : `It's Election Day, neighbor! Head to your booth — make it count!`;
 
   return (
     <div className="space-y-6">
@@ -132,8 +133,9 @@ function PollDayHero({ onNavigate, constituency, lang, isKids }) {
         Live — Polling Day
       </motion.div>
 
-      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
-        {isKids ? '🎪 Adventure Day!' : '🗳️ Your Vote Awaits'}
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-orange-600' : 'font-sans text-slate-800'}`} variants={itemVariants}>
+        <Icon name={isKids ? 'Castle' : 'Vote'} size={32} className="inline-block mr-3 align-bottom text-primary-accent" />
+        {isKids ? 'Adventure Day!' : 'Your Vote Awaits'}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
@@ -143,10 +145,10 @@ function PollDayHero({ onNavigate, constituency, lang, isKids }) {
 
       <motion.div className="flex flex-col sm:flex-row gap-3" variants={itemVariants}>
         <button
-          className={`${isKids ? 'bubble-button-primary' : 'bg-neighbor-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
+          className={`${isKids ? 'bubble-button-primary' : 'bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate('boothPulse')}
         >
-          <span>📡</span>
+          <Icon name="Radio" size={20} />
           <span>{isKids ? 'Castle Queue' : 'Live Queue Tracker'}</span>
         </button>
 
@@ -154,7 +156,7 @@ function PollDayHero({ onNavigate, constituency, lang, isKids }) {
           className={`${isKids ? 'bubble-button-secondary' : 'bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate('map')}
         >
-          <span>🗺️</span>
+          <Icon name="Map" size={20} />
           <span>{isKids ? 'Find the Castle!' : 'Booth Directions'}</span>
         </button>
       </motion.div>
@@ -169,12 +171,14 @@ function EducationHero({ onNavigate, lang, isKids }) {
 
   return (
     <div className="space-y-6">
-      <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neighbor-primary/10 text-neighbor-primary text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
-        📚 Learn & Explore
+      <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
+        <Icon name="BookOpen" size={12} />
+        Learn & Explore
       </motion.div>
 
-      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
-        {isKids ? '🎪 The Great Beep!' : '🏘️ Your Civic Journey'}
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-orange-600' : 'font-sans text-slate-800'}`} variants={itemVariants}>
+        <Icon name={isKids ? 'Gamepad2' : 'Home'} size={32} className="inline-block mr-3 align-bottom text-primary-accent" />
+        {isKids ? 'The Great Beep!' : 'Your Civic Journey'}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
@@ -184,10 +188,10 @@ function EducationHero({ onNavigate, lang, isKids }) {
 
       <motion.div className="flex flex-col sm:flex-row gap-3" variants={itemVariants}>
         <button
-          className={`${isKids ? 'bubble-button-primary' : 'bg-neighbor-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
+          className={`${isKids ? 'bubble-button-primary' : 'bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-blue-200/50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate(isKids ? 'evm' : 'evm')}
         >
-          <span className="text-xl">{isKids ? '🎪' : '🗳️'}</span>
+          <Icon name={isKids ? 'Tent' : 'Fingerprint'} size={20} />
           <span>{isKids ? 'The Great Beep!' : 'Try EVM Simulator'}</span>
         </button>
 
@@ -195,7 +199,7 @@ function EducationHero({ onNavigate, lang, isKids }) {
           className={`${isKids ? 'bubble-button-secondary' : 'bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all active:scale-95'} flex-1 flex items-center justify-center gap-2`}
           onClick={() => onNavigate('impact')}
         >
-          <span className="text-xl">{isKids ? '⚡' : '📊'}</span>
+          <Icon name={isKids ? 'Zap' : 'BarChart3'} size={20} />
           <span>{isKids ? 'Fun Vote Facts!' : 'Hyper-Local Why'}</span>
         </button>
       </motion.div>
@@ -211,17 +215,22 @@ function WaitingRoomHero({ onNavigate, lang, isKids, isCounting }) {
   return (
     <div className="space-y-6">
       <motion.div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-tighter" variants={itemVariants}>
-        ⏳ The Waiting Room
+        <Icon name="Timer" size={12} />
+        The Waiting Room
       </motion.div>
 
-      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-scout-orange' : 'font-serif text-slate-800'}`} variants={itemVariants}>
-        {isCounting ? (isKids ? '🔮 Magic Counting!' : '📊 Counting Day!') : (isKids ? '🎲 Quiz Time!' : '⏳ The Waiting Room')}
+      <motion.h2 className={`text-3xl leading-tight ${isKids ? 'font-rounded text-orange-600' : 'font-sans text-slate-800'}`} variants={itemVariants}>
+        <Icon name={isCounting ? 'PieChart' : 'BrainCircuit'} size={32} className="inline-block mr-3 align-bottom text-primary-accent" />
+        {isCounting ? (isKids ? 'Magic Counting!' : 'Counting Day!') : (isKids ? 'Quiz Time!' : 'The Waiting Room')}
         <ListenButton text={message} lang={lang} />
       </motion.h2>
 
       {!isCounting && (
         <div className="space-y-4">
-          <h3 className="text-sm font-bold opacity-60 uppercase tracking-widest">Civic Quiz</h3>
+          <h3 className="text-sm font-bold opacity-60 uppercase tracking-widest flex items-center gap-2">
+            <Icon name="CheckSquare" size={16} />
+            Civic Quiz
+          </h3>
           {COUNTING_QUIZ.map((q, idx) => (
             <QuizCard key={idx} quiz={q} index={idx} isKids={isKids} />
           ))}
@@ -230,10 +239,11 @@ function WaitingRoomHero({ onNavigate, lang, isKids, isCounting }) {
 
       <motion.div className="mt-6" variants={itemVariants}>
         <button
-          className={`${isKids ? 'bubble-button-primary w-full' : 'bg-neighbor-primary text-white px-8 py-4 rounded-xl font-bold w-full shadow-lg transition-all active:scale-95'}`}
+          className={`${isKids ? 'bubble-button-primary w-full' : 'bg-blue-600 text-white px-8 py-4 rounded-xl font-bold w-full shadow-lg transition-all active:scale-95'}`}
           onClick={() => onNavigate('ledger')}
         >
-          {isKids ? '📖 Read Promise Book' : 'How Counting Works'}
+          <Icon name={isKids ? 'BookText' : 'History'} size={20} className="inline-block mr-2" />
+          {isKids ? 'Read Promise Book' : 'How Counting Works'}
         </button>
       </motion.div>
     </div>
@@ -246,7 +256,7 @@ function QuizCard({ quiz, index, isKids }) {
 
   return (
     <motion.div
-      className={`p-4 rounded-2xl border-2 transition-all ${selected !== null ? (isCorrect ? 'border-neighbor-success bg-neighbor-success/5' : 'border-red-200 bg-red-50') : 'border-slate-100 bg-slate-50/50'}`}
+      className={`p-4 rounded-2xl border-2 transition-all ${selected !== null ? (isCorrect ? 'border-emerald-500 bg-emerald-50/50' : 'border-red-200 bg-red-50/50') : 'border-slate-100 bg-white/50'}`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.4 + index * 0.1 }}
@@ -256,7 +266,7 @@ function QuizCard({ quiz, index, isKids }) {
         {quiz.options.map((opt, i) => (
           <button
             key={i}
-            className={`text-[10px] p-2 rounded-lg border transition-all ${selected === i ? (i === quiz.correct ? 'bg-neighbor-success text-white border-neighbor-success' : 'bg-red-500 text-white border-red-500') : 'bg-white border-slate-200 hover:border-neighbor-primary'}`}
+            className={`text-[10px] p-2 rounded-lg border transition-all ${selected === i ? (i === quiz.correct ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-red-500 text-white border-red-500') : 'bg-white border-slate-200 hover:border-blue-400'}`}
             onClick={() => selected === null && setSelected(i)}
             disabled={selected !== null}
           >

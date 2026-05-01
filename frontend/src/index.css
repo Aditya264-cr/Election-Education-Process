@@ -4,40 +4,99 @@
 
 /* ============================================
    FRIENDLY NEIGHBOR CIVIC AI — Sovereign Design System
+   ============================================
+   MNC Standard UI: Inter/Roboto, 8pt Grid, Soft Shadows
    ============================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@400;700;900&family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@400;500;700&family=Quicksand:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --primary: #3b82f6; /* Cool Blue */
-    --bg-app: #f5f5f4;  /* Warm Neutral */
-    --accent: #991b1b;  /* Garnet */
+    /* ── Sovereign Professional Palette ── */
+    --primary: #0f172a;
+    --primary-accent: #3b82f6;
+    --primary-light: #eff6ff;
+    --secondary: #64748b;
+    
+    /* ── Functional Colors ── */
     --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+
+    /* ── Backgrounds ── */
+    --bg-app: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    
+    /* ── Typography ── */
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* ── 8pt Grid System ── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* ── Shadows (MNC Standard Soft Shadows) ── */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* ── Borders & Radius ── */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+    --border-subtle: 1px solid #e2e8f0;
+
+    /* ── Transitions ── */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    
     --touch-min: 48px;
   }
 
   body {
-    @apply font-sans bg-neighbor-neutral text-slate-900 transition-colors duration-300;
+    @apply font-sans bg-slate-50 text-slate-900 transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-bold text-slate-800;
+    @apply font-sans font-bold text-slate-800 tracking-tight;
   }
 
   /* Kids Mode Overrides */
   body.kids-mode {
-    @apply font-rounded bg-scout-yellow/10;
-    --primary: #f97316; /* Persimmon Orange */
+    @apply font-rounded bg-amber-50/50;
+    --primary-accent: #f97316; /* Persimmon Orange */
   }
 
   body.kids-mode h1, 
   body.kids-mode h2, 
   body.kids-mode h3 {
-    @apply font-rounded font-extrabold text-scout-orange;
+    @apply font-rounded font-extrabold text-orange-600;
   }
 }
 
 @layer components {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .card {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm p-6;
+  }
+
   .bubble-button {
     @apply relative px-6 py-3 rounded-2xl font-bold transition-all duration-75 active:translate-y-1;
     box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
@@ -48,11 +107,32 @@
   }
 
   .bubble-button-primary {
-    @apply bubble-button bg-scout-orange text-white;
+    @apply bubble-button bg-orange-500 text-white hover:bg-orange-600;
   }
 
   .bubble-button-secondary {
-    @apply bubble-button bg-scout-green text-slate-800;
+    @apply bubble-button bg-emerald-400 text-slate-900 hover:bg-emerald-500;
+  }
+
+  .skeleton {
+    @apply bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-[length:200%_100%] animate-pulse rounded-md;
+    animation: skeleton-loading 1.5s infinite linear;
   }
 }
 
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Accessibility ── */
+*:focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

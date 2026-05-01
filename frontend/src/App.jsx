@@ -18,6 +18,7 @@ import SafetyNet from './components/SafetyNet/SafetyNet';
 
 import Layout from './components/DesignSystem/Organisms/Layout';
 import Drawer from './components/DesignSystem/Molecules/Drawer';
+import Icon from './components/DesignSystem/Atoms/Icon';
 import { useLanguage } from './hooks/useLanguage';
 import { useKidsMode } from './hooks/useKidsMode';
 import { useConstituency } from './hooks/useConstituency';
@@ -45,7 +46,7 @@ export default function App() {
 
   const navItems = [
     { id: 'timeline', label: t('nav_timeline'), icon: 'Calendar', active: activeDrawer === 'timeline' },
-    { id: 'evm', label: isKidsMode ? 'The Great Beep!' : t('nav_evm'), icon: 'Vote', active: activeDrawer === 'evm' },
+    { id: 'evm', label: isKidsMode ? 'The Great Beep!' : t('nav_evm'), icon: 'Fingerprint', active: activeDrawer === 'evm' },
     { id: 'impact', label: isKidsMode ? 'Fun Facts!' : t('nav_impact'), icon: isKidsMode ? 'Zap' : 'BarChart3', active: activeDrawer === 'impact' },
     { id: 'village', label: isKidsMode ? 'Ask Anything!' : 'Village Square', icon: 'MessagesSquare', active: activeDrawer === 'village' },
     { id: 'ledger', label: isKidsMode ? 'Promise Book' : 'Promise Ledger', icon: 'BookText', active: activeDrawer === 'ledger' },
@@ -101,15 +102,20 @@ export default function App() {
         )}
 
         {selected?.approximate && (
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-full text-sm text-amber-800 shadow-lg z-40">
-            📍 Approximate location — results may vary. <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold">Verify on ECI</a>
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-200 px-6 py-3 rounded-full text-sm text-amber-800 shadow-xl z-40 flex items-center gap-3">
+            <Icon name="MapPin" size={18} className="text-amber-600" />
+            <span>Approximate location — results may vary.</span>
+            <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-900">Verify on ECI</a>
           </div>
         )}
 
         {loading && (
-          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 text-white">
-            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
-            <span className="font-bold tracking-wide">{t('map_locating')}</span>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col items-center justify-center gap-6 text-white">
+            <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-xl font-bold tracking-tight">{t('map_locating')}</span>
+              <span className="text-sm text-white/60 font-medium tracking-wide uppercase">Sovereign Audit Active</span>
+            </div>
           </div>
         )}
       </main>
