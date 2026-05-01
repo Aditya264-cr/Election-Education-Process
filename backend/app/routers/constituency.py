@@ -4,6 +4,7 @@ from app.agents.map_maker import map_maker_agent
 from app.agents.researcher import researcher_agent
 from app.agents.constitutional_compliance import ConstitutionalComplianceAgent
 from app.agents.friendly_neighbor import transform_label
+from app.agents.accessibility_advocate import accessibility_advocate_agent
 
 router = APIRouter()
 compliance_agent = ConstitutionalComplianceAgent()
@@ -30,17 +31,16 @@ async def get_constituency(
     pc_name = base_data.pc_name
 
     # 2. Parallel Agent Execution: Fetch secondary intelligence
-    # Map-Maker (Booth Metrics), Researcher (Local Issues/ROI), Compliance (Legal Nuances)
     metrics_task = map_maker_agent["metrics"](pc_name)
     issues_task = researcher_agent.get_local_issues(pc_name)
     roi_task = researcher_agent.get_infrastructure_roi(pc_name)
+    accessibility_task = asyncio.to_thread(accessibility_advocate_agent.get_booth_accessibility, pc_name)
     
-    # We can also add a placeholder for 'legal nuances' or cross-references
-    
-    metrics, local_issues, roi = await asyncio.gather(
+    metrics, local_issues, roi, accessibility = await asyncio.gather(
         metrics_task,
         issues_task,
-        roi_task
+        roi_task,
+        accessibility_task
     )
 
     return {
@@ -50,6 +50,7 @@ async def get_constituency(
             "booth_health": metrics,
             "local_issues": local_issues,
             "vote_roi": roi,
+            "accessibility": accessibility,
             "labels": {
                 "pc": transform_label("parliamentary_constituency", lang),
                 "ac": transform_label("assembly_constituency", lang),
@@ -59,6 +60,11 @@ async def get_constituency(
             }
         }
     }
+
+@router.get("/{pc_name}/accessibility")
+async def get_accessibility(pc_name: str):
+    """Specific endpoint for AMF accessibility details."""
+    return accessibility_advocate_agent.get_booth_accessibility(pc_name)
 
 @router.get("/search-by-pincode")
 async def search_by_pincode(pincode: str = Query(..., pattern=r"^\d{6}$")):

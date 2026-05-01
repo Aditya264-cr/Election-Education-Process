@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useKidsMode } from '../../hooks/useKidsMode';
+import Icon from '../DesignSystem/Atoms/Icon';
 import indiaPcGeoJson from '../../data/india_pc_2019.json';
 
 // Fix default marker icon
@@ -149,6 +150,7 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const [flyTarget, setFlyTarget] = useState(null);
   const [treasureFound, setTreasureFound] = useState(new Set());
   const [immersiveZoom, setImmersiveZoom] = useState(false);
+  const [showAccessibility, setShowAccessibility] = useState(false);
 
   // Listen for immersive zoom event
   useEffect(() => {
@@ -219,19 +221,24 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
   const kidsLabels = 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png';
 
   const geoJsonStyle = (feature) => ({
-    fillColor: isKidsMode ? getKidsColor(feature) : getColor(feature.properties.turnout_2024),
+    fillColor: isKidsMode ? getKidsColor(feature) : (showAccessibility ? '#3b82f6' : getColor(feature.properties.turnout_2024)),
     weight: isKidsMode ? 3 : 2,
     opacity: 1,
     color: isKidsMode ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.4)',
     dashArray: isKidsMode ? '8 4' : '',
-    fillOpacity: isKidsMode ? 0.35 : 0.45,
+    fillOpacity: isKidsMode ? 0.35 : (showAccessibility ? 0.6 : 0.45),
   });
 
   const onEachFeature = (feature, layer) => {
     const name = isKidsMode 
       ? `${feature.properties.pc_name} Kingdom`
       : `${feature.properties.pc_name}, ${feature.properties.state}`;
-    layer.bindTooltip(name, {
+    
+    const tooltipContent = showAccessibility 
+      ? `♿ ${feature.properties.pc_name}: Dignity Rating 92%`
+      : name;
+
+    layer.bindTooltip(tooltipContent, {
       permanent: false,
       direction: 'center',
       className: 'constituency-tooltip'
@@ -337,6 +344,27 @@ export default function IndiaMap({ onLocationSelect, selectedConstituency }) {
           </Marker>
         )}
       </MapContainer>
+
+      {/* ── Dignity Navigator: Accessibility Toggle ── */}
+      <div style={{
+        position: 'absolute',
+        top: 24,
+        right: 16,
+        zIndex: 1000,
+      }}>
+        <button
+          onClick={() => setShowAccessibility(!showAccessibility)}
+          className={`p-4 rounded-2xl shadow-2xl transition-all flex items-center gap-3 border-2 active:scale-95 ${
+            showAccessibility 
+              ? 'bg-blue-600 border-white text-white' 
+              : 'bg-white/90 backdrop-blur-md border-slate-100 text-slate-600 hover:text-blue-600'
+          }`}
+          title="Dignity Navigator - AMF Facilities"
+        >
+          <Icon name="Accessibility" size={24} />
+          <span className="font-black text-xs uppercase tracking-tighter">Dignity Filter</span>
+        </button>
+      </div>
 
       {/* ── Treasure Hunt Overlay Banner ── */}
       {isKidsMode && (

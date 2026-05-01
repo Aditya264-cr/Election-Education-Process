@@ -13,6 +13,9 @@ export default function NeighborPanel({ constituency, onClose }) {
   const boothHealth = intelligence.booth_health || {};
   const localIssues = intelligence.local_issues || [];
   const voteRoi = intelligence.vote_roi || "";
+  const accessibility = intelligence.accessibility || {};
+  const dignityScore = accessibility.dignity_score || 0;
+  const amfFeatures = accessibility.features || [];
 
   return (
     <div className={`neighbor-panel glass-panel animate-slideInRight ${isKidsMode ? 'kids' : ''}`}>
@@ -39,6 +42,26 @@ export default function NeighborPanel({ constituency, onClose }) {
       </div>
 
       <div className="np-content space-y-6 overflow-y-auto pr-2">
+        {/* Dignity Navigator: Accessibility Score */}
+        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex gap-4">
+          <div className="p-2 bg-emerald-100 rounded-lg h-fit text-emerald-600">
+            <Icon name="Accessibility" size={20} />
+          </div>
+          <div className="flex-1 space-y-1">
+            <div className="flex justify-between items-center">
+               <h3 className="font-bold text-emerald-900 text-sm">Dignity Rating</h3>
+               <span className="text-xl font-black text-emerald-600">{dignityScore}%</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {amfFeatures.map((f, i) => (
+                <span key={i} className="px-2 py-0.5 bg-white/60 border border-emerald-200 text-emerald-700 text-[9px] font-bold rounded-md">
+                  {f}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Layer 1: The Hook (Predictive Metrics) */}
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-4">
           <div className="p-2 bg-blue-100 rounded-lg h-fit text-blue-600">
